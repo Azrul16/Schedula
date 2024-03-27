@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:schedula/start_screen.dart';
 
 void main() {
   runApp(
@@ -6,11 +7,14 @@ void main() {
       home: Scaffold(
         body: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(colors: [
-              Colors.deepOrangeAccent,
-              Colors.yellowAccent,
-            ], begin: Alignment.topLeft, end: Alignment.bottomRight),
+            gradient: LinearGradient(
+              colors: [
+                Colors.orange,
+                Colors.yellow,
+              ],
+            ),
           ),
+          child: const StartScreen(),
         ),
       ),
     ),
