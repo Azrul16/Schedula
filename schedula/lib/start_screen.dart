@@ -20,15 +20,16 @@ class StartScreen extends StatelessWidget {
           ),
           const Text(
             'Welcome to Schedula.',
-            style: TextStyle(color: Colors.black, fontSize: 24),
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 24,
+            ),
           ),
           const SizedBox(
             height: 30,
           ),
           const ElevatedButton(
-            style: ButtonStyle(
-              foregroundColor: Colors.green,
-            ),
+            style: ButtonStyle(),
             onPressed: FirstQuiz,
             child: Text('Login'),
           ),
