@@ -13,6 +13,8 @@ class ClassList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
       itemCount: selectedSchedule.length,
       itemBuilder: (ctx, index) => ClassItem(
         selectedSchedule[index],
