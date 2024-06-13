@@ -23,19 +23,19 @@ class _NewClassState extends State<NewClass> {
               label: Text('Course Title'),
             ),
           ),
-          TextField(
+          const TextField(
             maxLength: 30,
             decoration: InputDecoration(
               label: Text("Teacher's name"),
             ),
           ),
-          TextField(
+          const TextField(
             maxLength: 7,
             decoration: InputDecoration(
               label: Text('Course Code'),
             ),
           ),
-          Row(
+          const Row(
             children: [],
           )
         ],
