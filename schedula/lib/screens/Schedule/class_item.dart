@@ -22,7 +22,7 @@ class ClassItem extends StatelessWidget {
               DateFormat.jm().format(classSchedule.time),
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 20,
+                fontSize: 14,
               ),
             ),
             const Spacer(),
@@ -59,7 +59,7 @@ class ClassItem extends StatelessWidget {
             Text(
               DateFormat('d MMMM, yyyy').format(classSchedule.date),
               style: const TextStyle(
-                fontSize: 20,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
             ),

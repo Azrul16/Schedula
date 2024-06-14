@@ -9,7 +9,18 @@ class NewClass extends StatefulWidget {
 }
 
 class _NewClassState extends State<NewClass> {
-  void _saveTitleInput(String inputValue) {}
+  final _titleController = TextEditingController();
+  final _teacherController = TextEditingController();
+  final _courseController = TextEditingController();
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _teacherController.dispose();
+    _courseController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -17,26 +28,46 @@ class _NewClassState extends State<NewClass> {
       child: Column(
         children: [
           TextField(
-            onChanged: _saveTitleInput,
+            controller: _titleController,
             maxLength: 50,
             decoration: const InputDecoration(
               label: Text('Course Title'),
             ),
           ),
-          const TextField(
+          TextField(
+            controller: _teacherController,
             maxLength: 30,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               label: Text("Teacher's name"),
             ),
           ),
-          const TextField(
+          TextField(
+            controller: _courseController,
             maxLength: 7,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               label: Text('Course Code'),
             ),
           ),
           const Row(
             children: [],
+          ),
+          Row(
+            children: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  print(_titleController.text);
+                  print(_teacherController);
+                  print(_courseController);
+                },
+                child: const Text('Save Class'),
+              ),
+            ],
           )
         ],
       ),

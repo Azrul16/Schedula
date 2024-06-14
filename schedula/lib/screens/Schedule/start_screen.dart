@@ -23,7 +23,7 @@ class _StartScreenState extends State<StartScreen> {
     ),
     ClassSchedule(
       courseTitle: 'Networking',
-      courseTecher: "Samsuzzaman Sabuz sir",
+      courseTecher: "Sabuz sir",
       date: DateTime.now(),
       time: DateTime.now(),
       courseCode: 'CIT-313',
