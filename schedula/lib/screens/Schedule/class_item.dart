@@ -26,34 +26,36 @@ class ClassItem extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            Column(
-              children: [
-                Text(
-                  classSchedule.courseTitle,
-                  style: GoogleFonts.lato(
-                    fontSize: 20,
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.w800,
+            Expanded(
+              child: Column(
+                children: [
+                  Text(
+                    classSchedule.courseTitle,
+                    style: GoogleFonts.lato(
+                      fontSize: 20,
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
-                ),
-                Text(
-                  classSchedule.courseTecher,
-                  style: GoogleFonts.lato(
-                    fontStyle: FontStyle.italic,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
+                  Text(
+                    classSchedule.courseTecher,
+                    style: GoogleFonts.lato(
+                      fontStyle: FontStyle.italic,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                Text(
-                  classSchedule.courseCode,
-                  style: GoogleFonts.lato(
-                    color: const Color.fromARGB(255, 9, 163, 22),
-                    fontSize: 18,
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.w900,
+                  Text(
+                    classSchedule.courseCode,
+                    style: GoogleFonts.lato(
+                      color: const Color.fromARGB(255, 9, 163, 22),
+                      fontSize: 18,
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             const Spacer(),
             Text(
