@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:schedula/models/models.dart';
 
 class NewClass extends StatefulWidget {
-  const NewClass({super.key});
+  const NewClass({super.key, required this.onAddClass});
+
+  final void Function(ClassSchedule classSchedule) onAddClass;
   @override
   State<StatefulWidget> createState() {
     return _NewClassState();
@@ -12,6 +16,79 @@ class _NewClassState extends State<NewClass> {
   final _titleController = TextEditingController();
   final _teacherController = TextEditingController();
   final _courseController = TextEditingController();
+  DateTime? _selectedDate;
+  DateTime? _selectedTime;
+
+  DateTime convertToDateTime(TimeOfDay timeOfDay) {
+    DateTime now = DateTime.now();
+    DateTime dateTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      timeOfDay.hour,
+      timeOfDay.minute,
+    );
+
+    return dateTime;
+  }
+
+  void _timePicker() async {
+    final TimeOfDay initialTime = TimeOfDay.now();
+    final pickedTime = await showTimePicker(
+      context: context,
+      initialTime: initialTime,
+    );
+    setState(() {
+      _selectedTime = convertToDateTime(pickedTime!);
+    });
+  }
+
+  void _datePicker() async {
+    final now = DateTime.now();
+    final firstDate = DateTime(now.year, now.month, now.day);
+    final lastDate = DateTime(now.year, now.month + 7, now.day);
+    final pickedDate = await showDatePicker(
+      context: context,
+      firstDate: firstDate,
+      lastDate: lastDate,
+    );
+    setState(() {
+      _selectedDate = pickedDate;
+    });
+  }
+
+  void _submitClassDate() {
+    if (_titleController.text.trim().isEmpty ||
+        _selectedDate == null ||
+        _selectedTime == null ||
+        _teacherController.text.trim().isEmpty) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Invalid Input'),
+          content: const Text(
+              'Please make sure that you have entered value to all field.'),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                },
+                child: const Text('Okey'))
+          ],
+        ),
+      );
+    }
+    widget.onAddClass(
+      ClassSchedule(
+        courseTitle: _titleController.text,
+        courseTecher: _teacherController.text,
+        date: _selectedDate!,
+        time: _selectedTime!,
+        courseCode: _courseController.text,
+      ),
+    );
+    Navigator.pop(context);
+  }
 
   @override
   void dispose() {
@@ -27,6 +104,9 @@ class _NewClassState extends State<NewClass> {
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
+          const SizedBox(
+            height: 60,
+          ),
           TextField(
             controller: _titleController,
             maxLength: 50,
@@ -48,8 +128,39 @@ class _NewClassState extends State<NewClass> {
               label: Text('Course Code'),
             ),
           ),
-          const Row(
-            children: [],
+          Row(
+            children: [
+              Text(
+                _selectedTime == null
+                    ? 'Select Class Time'
+                    : DateFormat.jm().format(_selectedTime!),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+              IconButton(
+                onPressed: _timePicker,
+                icon: const Icon(Icons.timer),
+              ),
+              const Spacer(),
+              Text(
+                _selectedDate == null
+                    ? "Select a Date"
+                    : DateFormat('d MMMM, yyyy').format(_selectedDate!),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+              IconButton(
+                onPressed: _datePicker,
+                icon: const Icon(Icons.calendar_month),
+              )
+            ],
+          ),
+          const SizedBox(
+            height: 10,
           ),
           Row(
             children: [
@@ -61,9 +172,7 @@ class _NewClassState extends State<NewClass> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  print(_titleController.text);
-                  print(_teacherController);
-                  print(_courseController);
+                  _submitClassDate();
                 },
                 child: const Text('Save Class'),
               ),

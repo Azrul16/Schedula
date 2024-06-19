@@ -40,9 +40,18 @@ class _StartScreenState extends State<StartScreen> {
   void _openAddClassOverlay() {
     showModalBottomSheet(
         context: context,
+        isScrollControlled: true,
         builder: (ctx) {
-          return const NewClass();
+          return NewClass(
+            onAddClass: _addClass,
+          );
         });
+  }
+
+  void _addClass(ClassSchedule classSchedule) {
+    setState(() {
+      _selectedSchedule.add(classSchedule);
+    });
   }
 
   @override
