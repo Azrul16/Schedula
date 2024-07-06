@@ -58,6 +58,7 @@ class _StartScreenState extends State<StartScreen> {
   Widget build(context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: const Color.fromARGB(255, 53, 194, 236),
         title: const Text('Schedula'),
         actions: [

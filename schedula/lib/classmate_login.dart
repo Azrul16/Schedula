@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:schedula/screens/Schedule/start_screen.dart';
 import 'package:schedula/userAccounts/createUser.dart';
 
-class Login extends StatefulWidget {
-  const Login({super.key});
+class ClassmateLogin extends StatefulWidget {
+  const ClassmateLogin({super.key});
 
   @override
-  State<Login> createState() {
-    return _LoginState();
+  State<ClassmateLogin> createState() {
+    return _ClassmateLoginState();
   }
 }
 
-class _LoginState extends State<Login> {
+class _ClassmateLoginState extends State<ClassmateLogin> {
   void _startScreen() {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -31,15 +31,7 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.amber,
-      // appBar: AppBar(
-      //   actions: const [
-      //     Text(
-      //       'Schedula',
-      //     ),
-      //   ],
-      //   backgroundColor: Colors.orange,
-      // ),
+      backgroundColor: Colors.amberAccent,
       body: ListView(
         children: [
           const SizedBox(
@@ -55,20 +47,11 @@ class _LoginState extends State<Login> {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 100),
             child: TextField(
-              maxLength: 5,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                label: Text('Registration no'),
-              ),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 100),
-            child: TextField(
               maxLength: 10,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                label: Text('Student ID no'),
+                border: OutlineInputBorder(),
+                label: Text('Class Coupn'),
               ),
             ),
           ),
@@ -80,7 +63,7 @@ class _LoginState extends State<Login> {
             ),
           ),
           const SizedBox(
-            height: 10,
+            height: 16,
           ),
           const Text(
             'OR',
@@ -92,7 +75,7 @@ class _LoginState extends State<Login> {
             child: TextButton(
               onPressed: _createUserScreen,
               child: const Text(
-                'Create an Account',
+                'Register as a CR',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
