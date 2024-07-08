@@ -25,7 +25,7 @@ class _CreateUser extends State<CreateUser> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.amberAccent,
+      backgroundColor: const Color.fromARGB(255, 238, 229, 189),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.amber,
