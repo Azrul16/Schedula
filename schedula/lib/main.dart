@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:schedula/classmate_login.dart';
-import 'package:schedula/login_page.dart';
 import 'package:schedula/myapp.dart';
 
 void main() {
@@ -8,6 +6,7 @@ void main() {
     const MaterialApp(
       // home: Login(),
       home: MyApp(),
+      // home: NoteScreen(),
       // home: ClassmateLogin(),
       // home: CreateUser(),
     ),

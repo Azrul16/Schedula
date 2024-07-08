@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:schedula/models/models.dart';
-import 'package:schedula/screens/Schedule/class_list.dart';
-import 'package:schedula/screens/new_class.dart';
-import 'package:water_drop_nav_bar/water_drop_nav_bar.dart';
+import 'package:schedula/announsmentScreen/announcementScreen.dart';
+import 'package:schedula/noteScreen/note_screen.dart';
+import 'package:schedula/screens/Schedule/class_screen.dart';
 
 class StartScreen extends StatefulWidget {
   const StartScreen({super.key});
@@ -12,97 +11,66 @@ class StartScreen extends StatefulWidget {
 }
 
 class _StartScreenState extends State<StartScreen> {
-  int selectedIndex = 0;
-  final List<ClassSchedule> _selectedSchedule = [
-    ClassSchedule(
-      courseTitle: 'Numerical',
-      courseTecher: "Murad Sir",
-      date: DateTime.now(),
-      time: DateTime.now(),
-      courseCode: 'CIT-312',
-    ),
-    ClassSchedule(
-      courseTitle: 'Networking',
-      courseTecher: "Sabuz sir",
-      date: DateTime.now(),
-      time: DateTime.now(),
-      courseCode: 'CIT-313',
-    ),
-    ClassSchedule(
-      courseTitle: 'Micro Processor',
-      courseTecher: "Mahbub sir",
-      date: DateTime.now(),
-      time: DateTime.now(),
-      courseCode: 'CCE-312',
-    )
+  int _currentIndex = 0;
+  final PageController _pageController = PageController();
+
+  final List<Widget> _pages = [
+    const ClassScren(),
+    const NoteScreen(),
+    const Announcementscreen(),
   ];
 
-  void _openAddClassOverlay() {
-    showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (ctx) {
-          return NewClass(
-            onAddClass: _addClass,
-          );
-        });
-  }
-
-  void _addClass(ClassSchedule classSchedule) {
+  void onTappedBar(int index) {
     setState(() {
-      _selectedSchedule.add(classSchedule);
+      _currentIndex = index;
     });
+    _pageController.jumpToPage(index);
   }
 
   @override
   Widget build(context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: const Color.fromARGB(255, 53, 194, 236),
-        title: const Text('Schedula'),
-        actions: [
-          IconButton(
-            onPressed: _openAddClassOverlay,
-            icon: const Icon(Icons.add),
-          ),
-        ],
-      ),
-      backgroundColor: const Color.fromARGB(255, 12, 43, 53),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const Text('Welcome to CSE Faculty of PSTU'),
-              ClassList(selectedSchedule: _selectedSchedule),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: WaterDropNavBar(
-        backgroundColor: const Color.fromARGB(255, 179, 225, 240),
-        onItemSelected: (index) {
+      body: PageView(
+        controller: _pageController,
+        children: _pages,
+        onPageChanged: (index) {
           setState(() {
-            selectedIndex = index;
+            _currentIndex = index;
           });
-          // pageController.animateToPage(selectedIndex,
-          //     duration: const Duration(milliseconds: 400),
-          //     curve: Curves.easeOutQuad);
         },
-        selectedIndex: selectedIndex,
-        barItems: [
-          BarItem(
-            filledIcon: Icons.home,
-            outlinedIcon: Icons.home_outlined,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.ballot_outlined),
+            label: 'Classes',
+            backgroundColor: Colors.amber,
           ),
-          BarItem(filledIcon: Icons.note, outlinedIcon: Icons.note_outlined),
-          BarItem(
-              filledIcon: Icons.assignment,
-              outlinedIcon: Icons.assignment_outlined),
-          BarItem(
-              filledIcon: Icons.comment, outlinedIcon: Icons.comment_outlined),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.business),
+            label: 'Notes',
+            backgroundColor: Colors.green,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.school),
+            label: 'Announcement',
+            backgroundColor: Colors.purple,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+            backgroundColor: Colors.pink,
+          ),
         ],
+        currentIndex: _currentIndex,
+        selectedItemColor: Colors.black,
+        onTap: onTappedBar,
       ),
     );
   }
 }
+
+
+// _pageController.animateToPage(_currentIndex,
+//               duration: const Duration(milliseconds: 400),
+//               curve: Curves.easeOutQuad);

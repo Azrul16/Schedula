@@ -8,7 +8,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void _startScreen() {
+    void startScreen() {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => const Login(),
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       );
     }
 
-    void _classmateScreen() {
+    void classmateScreen() {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => const ClassmateLogin(),
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       );
     }
 
-    void _createUserScreen() {
+    void createUserScreen() {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (ctx) => const CreateUser(),
@@ -49,78 +49,62 @@ class MyApp extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.all(30),
-            child: Image.asset('assets/images/appstore.png'),
+            child: Image.asset(
+              'assets/images/appstore.png',
+            ),
           ),
           const SizedBox(
-            height: 20,
+            height: 60,
           ),
-          Row(
-            children: [
-              const SizedBox(
-                width: 30,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: ElevatedButton(
-                  onPressed: _startScreen,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: Column(
+              children: [
+                ElevatedButton(
+                  onPressed: startScreen,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 226, 110, 2),
-                  ),
-                  child: const Text(
-                    'Login as a CR',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: Colors.black,
+                    foregroundColor: Colors.black,
+                    backgroundColor: Colors.white, // Text color
+                    minimumSize: const Size(double.infinity, 50), // Button size
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
+                  child: const Text('Log In'),
                 ),
-              ),
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: ElevatedButton(
-                  onPressed: _classmateScreen,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 226, 110, 2),
-                  ),
-                  child: const Text(
-                    'Login as a Classmate',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                width: 30,
-              ),
-            ],
+              ],
+            ),
           ),
           const SizedBox(
-            height: 50,
+            height: 10,
           ),
           const Text(
             'OR',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 16),
           ),
-          const SizedBox(
-            height: 20,
-          ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 100),
-            child: TextButton(
-              onPressed: _createUserScreen,
-              child: const Text(
-                'Register as a CR',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Dont have an account?',
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
                 ),
-              ),
+                TextButton(
+                  onPressed: createUserScreen,
+                  child: const Text(
+                    'Sign up',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.deepOrange,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(

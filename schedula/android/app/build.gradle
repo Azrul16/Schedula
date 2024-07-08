@@ -1,5 +1,8 @@
 plugins {
     id "com.android.application"
+    // START: FlutterFire Configuration
+    id 'com.google.gms.google-services'
+    // END: FlutterFire Configuration
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
@@ -50,6 +53,16 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
+
+    configurations.all {
+    resolutionStrategy {
+        eachDependency {
+            if ((requested.group == "org.jetbrains.kotlin") && (requested.name.startsWith("kotlin-stdlib"))) {
+                useVersion("1.8.0")
+            }
+        }
+    }
+}
 
     buildTypes {
         release {

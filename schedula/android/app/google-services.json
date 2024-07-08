@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1028683149003",
+    "firebase_url": "https://schedula-6bd5d-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "schedula-6bd5d",
+    "storage_bucket": "schedula-6bd5d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1028683149003:android:3c0502a97af302f40bb54e",
+        "android_client_info": {
+          "package_name": "com.example.schedula"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxYN6svk13Y8ljs1eZY56PVdg52CPjerU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
