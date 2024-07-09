@@ -12,29 +12,7 @@ class ClassScren extends StatefulWidget {
 }
 
 class _ClassScrenState extends State<ClassScren> {
-  final List<ClassSchedule> _selectedSchedule = [
-    ClassSchedule(
-      courseTitle: 'Numerical',
-      courseTecher: "Murad Sir",
-      date: DateTime.now(),
-      time: DateTime.now(),
-      courseCode: 'CIT-312',
-    ),
-    ClassSchedule(
-      courseTitle: 'Networking',
-      courseTecher: "Sabuz sir",
-      date: DateTime.now(),
-      time: DateTime.now(),
-      courseCode: 'CIT-313',
-    ),
-    ClassSchedule(
-      courseTitle: 'Micro Processor',
-      courseTecher: "Mahbub sir",
-      date: DateTime.now(),
-      time: DateTime.now(),
-      courseCode: 'CCE-312',
-    )
-  ];
+  final List<ClassSchedule> _selectedSchedule = [];
 
   void _openAddClassOverlay() {
     showModalBottomSheet(
@@ -76,17 +54,27 @@ class _ClassScrenState extends State<ClassScren> {
         ],
       ),
       backgroundColor: Colors.white,
-      body: Center(
+      body: Container(
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(
+                'assets/class_background.jpg'), // Replace with your image asset path
+            fit: BoxFit.fill,
+          ),
+        ),
         child: SingleChildScrollView(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Text(
                 'Classes are more Important than sleep',
                 style: GoogleFonts.getFont(
                   'Kalnia',
                   textStyle: const TextStyle(
-                    fontSize: 40,
-                  ),
+                      fontSize: 35,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
               ClassList(selectedSchedule: _selectedSchedule),

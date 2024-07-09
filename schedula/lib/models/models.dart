@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 
 const uuid = Uuid();
@@ -17,4 +18,14 @@ class ClassSchedule {
   final String courseTecher;
   final DateTime date;
   final DateTime time;
+
+  factory ClassSchedule.fromJSON(Map<String, dynamic> json) {
+    return ClassSchedule(
+      courseTitle: json['course_title'],
+      courseTecher: json['course_teacher'],
+      date: (json['date'] as Timestamp).toDate(),
+      time: (json['time'] as Timestamp).toDate(),
+      courseCode: json['course_code'],
+    );
+  }
 }
