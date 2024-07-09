@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:schedula/models/models.dart';
 import 'package:schedula/screens/Schedule/class_item.dart';
@@ -12,13 +13,27 @@ class ClassList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: selectedSchedule.length,
-      itemBuilder: (ctx, index) => ClassItem(
-        selectedSchedule[index],
-      ),
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance.collection('classes').snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        final allClasses = snapshot.data?.docs;
+        return ListView.builder(
+          itemCount: allClasses?.length,
+          shrinkWrap: true,
+          physics:const NeverScrollableScrollPhysics(),
+          itemBuilder: (ctx, index) {
+            final newClass = ClassSchedule.fromJSON(allClasses![index].data());
+
+            return ClassItem(newClass);
+          },
+        );
+      },
     );
   }
 }
