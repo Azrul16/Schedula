@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:schedula/models/models.dart';
@@ -57,7 +58,7 @@ class _NewClassState extends State<NewClass> {
     });
   }
 
-  void _submitClassDate() {
+  void _submitClassDate() async {
     if (_titleController.text.trim().isEmpty ||
         _selectedDate == null ||
         _selectedTime == null ||
@@ -87,6 +88,19 @@ class _NewClassState extends State<NewClass> {
         courseCode: _courseController.text,
       ),
     );
+    final thisClass = ClassSchedule(
+      courseTitle: _titleController.text,
+      courseTecher: _teacherController.text,
+      date: _selectedDate!,
+      time: _selectedTime!,
+      courseCode: _courseController.text,
+    );
+    thisClass.toJSON();
+
+    await FirebaseFirestore.instance
+        .collection('classes')
+        .add(thisClass.toJSON());
+    // ignore: use_build_context_synchronously
     Navigator.pop(context);
   }
 
@@ -109,21 +123,21 @@ class _NewClassState extends State<NewClass> {
           ),
           TextField(
             controller: _titleController,
-            maxLength: 50,
+            maxLength: 25,
             decoration: const InputDecoration(
               label: Text('Course Title'),
             ),
           ),
           TextField(
             controller: _teacherController,
-            maxLength: 30,
+            maxLength: 20,
             decoration: const InputDecoration(
               label: Text("Teacher's name"),
             ),
           ),
           TextField(
             controller: _courseController,
-            maxLength: 7,
+            maxLength: 8,
             decoration: const InputDecoration(
               label: Text('Course Code'),
             ),
@@ -174,10 +188,19 @@ class _NewClassState extends State<NewClass> {
                 onPressed: () {
                   _submitClassDate();
                 },
-                child: const Text('Save Class'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                ),
+                child: const Text(
+                  'Save Class',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
-          )
+          ),
         ],
       ),
     );

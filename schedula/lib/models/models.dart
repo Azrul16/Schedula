@@ -28,4 +28,15 @@ class ClassSchedule {
       courseCode: json['course_code'],
     );
   }
+
+  toJSON() {
+    return {
+      'id': id,
+      'course_title': courseTitle,
+      'course_teacher': courseTecher,
+      'date': date,
+      'time': time,
+      'course_code': courseCode,
+    };
+  }
 }
