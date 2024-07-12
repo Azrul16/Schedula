@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:schedula/announsmentScreen/announcementScreen.dart';
+import 'package:schedula/chatAI/chatAI.dart';
 import 'package:schedula/noteScreen/note_screen.dart';
 import 'package:schedula/screens/Schedule/class_screen.dart';
 
@@ -18,6 +19,7 @@ class _StartScreenState extends State<StartScreen> {
     const ClassScren(),
     const NoteScreen(),
     const Announcementscreen(),
+    const ChatAI()
   ];
 
   void onTappedBar(int index) {

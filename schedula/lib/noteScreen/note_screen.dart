@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:schedula/noteScreen/new_note.dart';
 
 class NoteScreen extends StatefulWidget {
   const NoteScreen({super.key});
@@ -11,9 +12,10 @@ class NoteScreen extends StatefulWidget {
 class _NoteScreenState extends State<NoteScreen> {
   void _onAddNotesOverlay() {
     showModalBottomSheet(
+      isScrollControlled: true,
       context: context,
       builder: (ctx) {
-        return const Text('Hello, Welcome to new notes');
+        return const NewNote();
       },
     );
   }

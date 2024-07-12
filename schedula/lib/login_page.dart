@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:schedula/screens/Schedule/start_screen.dart';
 import 'package:schedula/userAccounts/createUser.dart';
 
@@ -82,6 +83,34 @@ class _LoginState extends State<Login> {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     label: Text('Paassword'),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50),
+                  child: Text(
+                    'or',
+                    style: GoogleFonts.getFont(
+                      'Lumanosimo',
+                      textStyle: const TextStyle(fontSize: 18),
+                    ),
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 50),
+                child: TextField(
+                  maxLength: 5,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    label: Text('Class Code'),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
                         color: Colors.black,

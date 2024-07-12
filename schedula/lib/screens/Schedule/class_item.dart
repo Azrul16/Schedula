@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -12,18 +13,61 @@ class ClassItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> deleteButton(String id) async {
+      await FirebaseFirestore.instance.collection('classes').doc().delete();
+    }
+
+    void showDeleteDialog(BuildContext context) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Delete'),
+            content: const Text('Are you sure you want to delete this class?'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+              ),
+              TextButton(
+                child: const Text('Delete'),
+                onPressed: () {
+                  // Close the dialog
+                  deleteButton(classSchedule.id);
+                  // Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     return Card(
       color: Colors.yellow[300],
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Row(
           children: [
-            Text(
-              DateFormat.jm().format(classSchedule.time),
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
+            Column(
+              children: [
+                Text(
+                  DateFormat.jm().format(classSchedule.time),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                Text(
+                  DateFormat('d MMMM, yyyy').format(classSchedule.date),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
             const Spacer(),
             Column(
@@ -33,7 +77,7 @@ class ClassItem extends StatelessWidget {
                   style: GoogleFonts.lato(
                     fontSize: 20,
                     fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
@@ -56,12 +100,19 @@ class ClassItem extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            Text(
-              DateFormat('d MMMM, yyyy').format(classSchedule.date),
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+            Column(
+              children: [
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.edit),
+                ),
+                IconButton(
+                  onPressed: () {
+                    showDeleteDialog(context);
+                  },
+                  icon: const Icon(Icons.delete),
+                ),
+              ],
             ),
           ],
         ),
