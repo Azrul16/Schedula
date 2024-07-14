@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:schedula/announsmentScreen/announcementScreen.dart';
 import 'package:schedula/chatAI/chatAI.dart';
 import 'package:schedula/noteScreen/note_screen.dart';
+import 'package:schedula/profile/profile_screen.dart';
 import 'package:schedula/screens/Schedule/class_screen.dart';
 
 class StartScreen extends StatefulWidget {
@@ -19,7 +20,8 @@ class _StartScreenState extends State<StartScreen> {
     const ClassScren(),
     const NoteScreen(),
     const Announcementscreen(),
-    const ChatAI()
+    const ChatAI(),
+    const ProfileScreen(),
   ];
 
   void onTappedBar(int index) {
@@ -59,9 +61,14 @@ class _StartScreenState extends State<StartScreen> {
             backgroundColor: Colors.purple,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
+            icon: Icon(Icons.chat),
+            label: 'Chat',
             backgroundColor: Colors.pink,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Profile',
+            backgroundColor: Colors.blue,
           ),
         ],
         currentIndex: _currentIndex,

@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:schedula/screens/Schedule/start_screen.dart';
 import 'package:schedula/userAccounts/createUser.dart';
+import 'package:schedula/utils/all_dialouge.dart';
+import 'package:schedula/utils/toast_message.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -13,12 +15,21 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  void _startScreen() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (ctx) => const StartScreen(),
-      ),
-    );
+  final auth = FirebaseAuth.instance;
+  void _startScreen() async {
+    try {
+      showLoadingDialoge(context);
+      await auth.signInWithEmailAndPassword(
+          //UserCredential userCredential =
+          email: email.text,
+          password: password.text);
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
+    } catch (e) {
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
+      showToastMessageWarning('Invalid email or password');
+    }
   }
 
   void _createUserScreen() {
@@ -28,6 +39,9 @@ class _LoginState extends State<Login> {
       ),
     );
   }
+
+  TextEditingController email = TextEditingController();
+  TextEditingController password = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -60,12 +74,12 @@ class _LoginState extends State<Login> {
               const SizedBox(
                 height: 10,
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 50),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 50),
                 child: TextField(
-                  maxLength: 5,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
+                  controller: email,
+                  keyboardType: TextInputType.text,
+                  decoration: const InputDecoration(
                     label: Text('Email'),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
@@ -76,12 +90,15 @@ class _LoginState extends State<Login> {
                   ),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 50),
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 50),
                 child: TextField(
-                  maxLength: 5,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
+                  controller: password,
+                  keyboardType: TextInputType.visiblePassword,
+                  decoration: const InputDecoration(
                     label: Text('Paassword'),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(

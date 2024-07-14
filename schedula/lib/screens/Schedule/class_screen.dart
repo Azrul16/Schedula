@@ -37,12 +37,17 @@ class _ClassScrenState extends State<ClassScren> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.amber,
-        title: Text(
-          'Classes',
-          style: GoogleFonts.getFont(
-            'Lumanosimo',
-            textStyle: const TextStyle(
-              fontSize: 18,
+        title: GestureDetector(
+          onTap: () {
+            //FirebaseAuth.instance.signOut();
+          },
+          child: Text(
+            'Classes',
+            style: GoogleFonts.getFont(
+              'Lumanosimo',
+              textStyle: const TextStyle(
+                fontSize: 18,
+              ),
             ),
           ),
         ),
@@ -82,6 +87,12 @@ class _ClassScrenState extends State<ClassScren> {
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _openAddClassOverlay,
+        backgroundColor: Colors.yellow,
+        child: const Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
