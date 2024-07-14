@@ -43,6 +43,12 @@ class _NoteScreenState extends State<NoteScreen> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _onAddNotesOverlay,
+        backgroundColor: Colors.green,
+        child: const Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
