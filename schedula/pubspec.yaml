@@ -39,7 +39,7 @@ dependencies:
   uuid: ^4.4.0
   intl: ^0.19.0
   water_drop_nav_bar: ^2.2.1
-  firebase_core: ^3.1.1
+  firebase_core: ^3.2.0
   flutter_blurhash: ^0.8.2
   cloud_firestore: ^5.0.2
   file_picker: ^8.0.6
@@ -51,6 +51,10 @@ dependencies:
   fluttertoast: ^8.2.6
   quickalert: ^1.1.0
   flutter_native_splash: ^2.4.1
+  chatview: ^2.0.0
+  get: ^4.6.6
+  firebase_storage: ^12.1.1
+  paper_card: ^0.1.4
 
 dev_dependencies:
   flutter_test:

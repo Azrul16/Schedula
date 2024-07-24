@@ -1,20 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:schedula/models/models.dart';
-import 'package:schedula/screens/Schedule/class_item.dart';
+import 'package:schedula/noteScreen/note_item.dart';
+import 'package:schedula/noteScreen/notes_model.dart';
 
-class ClassList extends StatelessWidget {
-  const ClassList({
+class NotesList extends StatelessWidget {
+  const NotesList({
     super.key,
-    required this.selectedSchedule,
+    required selectedNote,
   });
-
-  final List<ClassSchedule> selectedSchedule;
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('classes').snapshots(),
+      stream: FirebaseFirestore.instance.collection('notes').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -26,11 +24,13 @@ class ClassList extends StatelessWidget {
         return ListView.builder(
           itemCount: allClasses?.length,
           shrinkWrap: true,
-          physics:const NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (ctx, index) {
-            final newClass = ClassSchedule.fromJSON(allClasses![index].data());
+            final newNotes = ClassNotes.fromJSON(allClasses![index].data());
 
-            return ClassItem(newClass);
+            return NotesItem(
+              notesItem: newNotes,
+            );
           },
         );
       },

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:schedula/models/models.dart';
-import 'package:schedula/screens/Schedule/class_list.dart';
-import 'package:schedula/screens/new_class.dart';
+import 'package:schedula/class_schedule/class_models.dart';
+import 'package:schedula/class_schedule/class_list.dart';
+import 'package:schedula/class_schedule/new_class.dart';
 
 class ClassScren extends StatefulWidget {
   const ClassScren({super.key});
@@ -51,12 +51,6 @@ class _ClassScrenState extends State<ClassScren> {
             ),
           ),
         ),
-        actions: [
-          IconButton(
-            onPressed: _openAddClassOverlay,
-            icon: const Icon(Icons.add),
-          ),
-        ],
       ),
       backgroundColor: Colors.white,
       body: Container(
@@ -83,6 +77,9 @@ class _ClassScrenState extends State<ClassScren> {
                 ),
               ),
               ClassList(selectedSchedule: _selectedSchedule),
+              const SizedBox(
+                height: 20,
+              )
             ],
           ),
         ),

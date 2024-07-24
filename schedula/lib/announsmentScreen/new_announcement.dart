@@ -1,28 +1,24 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:schedula/noteScreen/notes_model.dart';
-import 'package:schedula/utils/all_dialouge.dart';
-import 'package:schedula/utils/toast_message.dart';
 
-class NewNote extends StatefulWidget {
-  const NewNote({super.key});
+class NewAnnouncement extends StatefulWidget {
+  const NewAnnouncement({super.key});
 
   @override
-  State<NewNote> createState() => _NewNoteState();
+  State<NewAnnouncement> createState() => _NewAnnouncementState();
 }
 
-class _NewNoteState extends State<NewNote> {
+class _NewAnnouncementState extends State<NewAnnouncement> {
   String? _fileName;
   File? file;
 
   Future<void> pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['pdf', 'png', 'jpg', 'jpeg', 'pptx', 'docx'],
+      allowedExtensions: ['pdf', 'png', 'jpg', 'jpeg', 'docx'],
     );
 
     if (result != null && result.files.single.path != null) {
@@ -56,23 +52,7 @@ class _NewNoteState extends State<NewNote> {
   }
 
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _codeController = TextEditingController();
-
-  Future<void> sendClassNotesToFirestore(ClassNotes notes) async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-    try {
-      await firestore.collection('notes').add(notes.toJson());
-      print('ClassNotes added to Firestore successfully');
-      Navigator.of(context).pop();
-      Navigator.of(context).pop();
-      showToastMessageNormal('Note uploaded');
-    } catch (e) {
-      print('Error adding ClassNotes to Firestore: $e');
-      showToastMessageWarning('Error uploading');
-    }
-  }
-
+  final TextEditingController _announceController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -87,14 +67,13 @@ class _NewNoteState extends State<NewNote> {
             maxLength: 25,
             controller: _titleController,
             decoration: const InputDecoration(
-              label: Text('Course Title'),
+              label: Text('Announcement'),
             ),
           ),
           TextField(
-            controller: _codeController,
-            maxLength: 8,
+            controller: _announceController,
             decoration: const InputDecoration(
-              label: Text('Course Teacher'),
+              label: Text('Details'),
             ),
           ),
           const SizedBox(
@@ -106,7 +85,7 @@ class _NewNoteState extends State<NewNote> {
                 onPressed: () {
                   pickFile();
                 },
-                child: const Text('Upload file'),
+                child: const Text('Upload resource'),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -129,16 +108,16 @@ class _NewNoteState extends State<NewNote> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  String? downloadUrl = await uploadFileToFirebase();
-                  if (downloadUrl != null) {
-                    showLoadingDialoge(context);
-                    ClassNotes notes = ClassNotes(
-                      courseTitle: _titleController.text,
-                      downloadURL: downloadUrl,
-                      courseTecher: _codeController.text,
-                    );
-                    await sendClassNotesToFirestore(notes);
-                  }
+                  // String? downloadUrl = await uploadFileToFirebase();
+                  // if (downloadUrl != null) {
+                  //   showLoadingDialoge(context);
+                  //   ClassNotes notes = ClassNotes(
+                  //     courseTitle: _titleController.text,
+                  //     downloadURL: downloadUrl,
+                  //     courseTecher: _codeController.text,
+                  //   );
+                  //   await sendClassNotesToFirestore(notes);
+                  // }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,

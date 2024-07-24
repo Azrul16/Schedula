@@ -162,6 +162,14 @@ class _CreateUser extends State<CreateUser> {
                   decoration: const InputDecoration(label: Text('Password')),
                 ),
               ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30),
+                child: Text(
+                  '[Password must contain at least one special characters and one number.]',
+                  style: TextStyle(fontSize: 12),
+                  textAlign: TextAlign.end,
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: TextFormField(
