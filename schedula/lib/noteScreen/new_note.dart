@@ -1,5 +1,12 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:schedula/noteScreen/notes_model.dart';
+import 'package:schedula/utils/all_dialouge.dart';
+import 'package:schedula/utils/toast_message.dart';
 
 class NewNote extends StatefulWidget {
   const NewNote({super.key});
@@ -10,9 +17,9 @@ class NewNote extends StatefulWidget {
 
 class _NewNoteState extends State<NewNote> {
   String? _fileName;
-  String? _filePath;
+  File? file;
 
-  Future<void> _pickFile() async {
+  Future<void> pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pdf', 'png', 'jpg', 'jpeg', 'pptx', 'docx'],
@@ -20,35 +27,74 @@ class _NewNoteState extends State<NewNote> {
 
     if (result != null && result.files.single.path != null) {
       setState(() {
+        file = File(result.files.single.path!);
         _fileName = result.files.single.name;
-        _filePath = result.files.single.path!;
       });
-    } else {
-      // User canceled the picker
+      print('File is successfully picked: $_fileName');
     }
   }
 
-  // final _titleController = TextEditingController();
-  // final _Controller = TextEditingController();
+  Future<String?> uploadFileToFirebase() async {
+    try {
+      if (file == null) {
+        print('No file selected');
+        return null;
+      }
+
+      String fileName = file!.path.split('/').last;
+      TaskSnapshot snapshot = await FirebaseStorage.instance
+          .ref('uploads/$fileName')
+          .putFile(file!);
+
+      String? downloadUrl = await snapshot.ref.getDownloadURL();
+      print('File upload successful');
+      return downloadUrl;
+    } on FirebaseException catch (e) {
+      print('Error occurred: $e');
+    }
+    return null;
+  }
+
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _codeController = TextEditingController();
+
+  Future<void> sendClassNotesToFirestore(ClassNotes notes) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    try {
+      await firestore.collection('notes').add(notes.toJson());
+      print('ClassNotes added to Firestore successfully');
+      Navigator.of(context).pop();
+      Navigator.of(context).pop();
+      showToastMessageNormal('Note uploaded');
+    } catch (e) {
+      print('Error adding ClassNotes to Firestore: $e');
+      showToastMessageWarning('Error uploading');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
+        mainAxisSize: MainAxisSize.max,
         children: [
           const SizedBox(
             height: 60,
           ),
-          const TextField(
+          TextField(
             maxLength: 25,
-            decoration: InputDecoration(
+            controller: _titleController,
+            decoration: const InputDecoration(
               label: Text('Course Title'),
             ),
           ),
-          const TextField(
+          TextField(
+            controller: _codeController,
             maxLength: 8,
-            decoration: InputDecoration(
-              label: Text('Course Code'),
+            decoration: const InputDecoration(
+              label: Text('Course Teacher'),
             ),
           ),
           const SizedBox(
@@ -57,19 +103,23 @@ class _NewNoteState extends State<NewNote> {
           Row(
             children: [
               ElevatedButton(
-                onPressed: _pickFile,
+                onPressed: () {
+                  pickFile();
+                },
                 child: const Text('Upload file'),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  _fileName ?? 'No file selected',
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),
-          if (_fileName != null && _filePath != null)
-            Column(
-              children: [
-                Text('File Name: $_fileName'),
-                Text('File Path: $_filePath'),
-              ],
-            ),
+          const SizedBox(height: 10),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextButton(
                 onPressed: () {
@@ -78,7 +128,18 @@ class _NewNoteState extends State<NewNote> {
                 child: const Text('Cancel'),
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  String? downloadUrl = await uploadFileToFirebase();
+                  if (downloadUrl != null) {
+                    showLoadingDialoge(context);
+                    ClassNotes notes = ClassNotes(
+                      courseTitle: _titleController.text,
+                      downloadURL: downloadUrl,
+                      courseTecher: _codeController.text,
+                    );
+                    await sendClassNotesToFirestore(notes);
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                 ),

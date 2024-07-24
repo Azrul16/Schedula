@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:schedula/models/models.dart';
+import 'package:schedula/class_schedule/class_models.dart';
 
 class NewClass extends StatefulWidget {
   const NewClass({super.key, required this.onAddClass});
@@ -117,6 +117,7 @@ class _NewClassState extends State<NewClass> {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
+        mainAxisSize: MainAxisSize.max,
         children: [
           const SizedBox(
             height: 60,

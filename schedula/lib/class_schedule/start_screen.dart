@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:schedula/announsmentScreen/announcementScreen.dart';
-import 'package:schedula/chatAI/chatAI.dart';
+import 'package:schedula/chatAI/chat_screen.dart';
 import 'package:schedula/noteScreen/note_screen.dart';
 import 'package:schedula/profile/profile_screen.dart';
-import 'package:schedula/screens/Schedule/class_screen.dart';
+import 'package:schedula/class_schedule/class_screen.dart';
 
 class StartScreen extends StatefulWidget {
   const StartScreen({super.key});
@@ -20,8 +20,8 @@ class _StartScreenState extends State<StartScreen> {
     const ClassScren(),
     const NoteScreen(),
     const Announcementscreen(),
-    const ChatAI(),
-    const ProfileScreen(),
+    const ChatScreen(),
+    const ProfilePage(),
   ];
 
   void onTappedBar(int index) {

@@ -109,40 +109,56 @@ class _LoginState extends State<Login> {
                   ),
                 ),
               ),
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 50),
-                  child: Text(
-                    'or',
-                    style: GoogleFonts.getFont(
-                      'Lumanosimo',
-                      textStyle: const TextStyle(fontSize: 18),
-                    ),
-                  ),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 50),
-                child: TextField(
-                  maxLength: 5,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    label: Text('Class Code'),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Colors.black,
-                        width: 2,
-                      ),
-                    ),
-                  ),
-                ),
+              // Center(
+              //   child: Padding(
+              //     padding: const EdgeInsets.symmetric(horizontal: 50),
+              //     child: Text(
+              //       'or',
+              //       style: GoogleFonts.getFont(
+              //         'Lumanosimo',
+              //         textStyle: const TextStyle(fontSize: 18),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              // const Padding(
+              //   padding: EdgeInsets.symmetric(horizontal: 50),
+              //   child: TextField(
+              //     maxLength: 5,
+              //     keyboardType: TextInputType.number,
+              //     decoration: InputDecoration(
+              //       label: Text('Class Code'),
+              //       enabledBorder: OutlineInputBorder(
+              //         borderSide: BorderSide(
+              //           color: Colors.black,
+              //           width: 2,
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              // const SizedBox(
+              //   height: 10,
+              // ),
+              const SizedBox(
+                height: 10,
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 150),
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange[900],
+                  ),
                   onPressed: _startScreen,
                   autofocus: true,
-                  child: const Text('Login'),
+                  child: Text(
+                    'Login',
+                    style: GoogleFonts.getFont('Lumanosimo',
+                        textStyle: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.amber)),
+                  ),
                 ),
               ),
               const SizedBox(
@@ -154,16 +170,43 @@ class _LoginState extends State<Login> {
                 style: TextStyle(fontSize: 10),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 100),
+                padding: const EdgeInsets.symmetric(horizontal: 50),
                 child: TextButton(
-                  onPressed: _createUserScreen,
+                  onPressed: () {},
                   child: const Text(
-                    'Create an Account',
+                    'Forgot Password?',
                     style: TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
                     ),
                   ),
+                ),
+              ),
+
+              Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Don't have an account? ",
+                      style: GoogleFonts.lato(
+                        fontStyle: FontStyle.italic,
+                        fontSize: 18,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: _createUserScreen,
+                      child: Text(
+                        "Create account",
+                        style: GoogleFonts.lato(
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: Colors.orange[900],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(

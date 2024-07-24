@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:schedula/models/models.dart';
+import 'package:paper_card/paper_card.dart';
+import 'package:schedula/class_schedule/class_models.dart';
 
 class ClassItem extends StatelessWidget {
   const ClassItem(
@@ -45,10 +46,13 @@ class ClassItem extends StatelessWidget {
       );
     }
 
-    return Card(
-      color: Colors.yellow[300],
+    return PaperCard(
+      backgroundColor: Colors.amber[300],
+      borderColor: Colors.orange[800],
+      textureFit: BoxFit.cover,
+      texture: true,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 10),
         child: Row(
           children: [
             Column(
