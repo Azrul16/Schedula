@@ -84,7 +84,6 @@ class _NewNoteState extends State<NewNote> {
             height: 60,
           ),
           TextField(
-            maxLength: 25,
             controller: _titleController,
             decoration: const InputDecoration(
               label: Text('Course Title'),
@@ -92,7 +91,6 @@ class _NewNoteState extends State<NewNote> {
           ),
           TextField(
             controller: _codeController,
-            maxLength: 8,
             decoration: const InputDecoration(
               label: Text('Course Teacher'),
             ),
