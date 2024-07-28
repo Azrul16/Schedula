@@ -10,9 +10,8 @@ class ClassSchedule {
     required this.date,
     required this.time,
     required this.courseCode,
-  }) : id = uuid.v4();
+  });
 
-  final String id;
   final String courseTitle;
   final String courseCode;
   final String courseTecher;
@@ -31,7 +30,6 @@ class ClassSchedule {
 
   toJSON() {
     return {
-      'id': id,
       'course_title': courseTitle,
       'course_teacher': courseTecher,
       'date': date,

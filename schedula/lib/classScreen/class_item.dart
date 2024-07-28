@@ -3,21 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:paper_card/paper_card.dart';
-import 'package:schedula/class_schedule/class_models.dart';
+import 'package:schedula/classScreen/class_models.dart';
 
 class ClassItem extends StatelessWidget {
   const ClassItem(
     this.classSchedule, {
+    required this.docID,
     super.key,
   });
   final ClassSchedule classSchedule;
+  final String docID;
+
+  Future<void> delete() async {
+    await FirebaseFirestore.instance.collection('claases').doc(docID).delete();
+    print(docID);
+  }
 
   @override
   Widget build(BuildContext context) {
-    Future<void> deleteButton(String id) async {
-      await FirebaseFirestore.instance.collection('classes').doc().delete();
-    }
-
     void showDeleteDialog(BuildContext context) {
       showDialog(
         context: context,
@@ -33,12 +36,11 @@ class ClassItem extends StatelessWidget {
                 },
               ),
               TextButton(
-                child: const Text('Delete'),
-                onPressed: () {
-                  // Close the dialog
-                  deleteButton(classSchedule.id);
-                  // Navigator.of(context).pop();
+                onPressed: () async {
+                  await delete();
+                  Navigator.of(context).pop(); // Close the dialog
                 },
+                child: const Text('Delete'),
               ),
             ],
           );
@@ -48,11 +50,16 @@ class ClassItem extends StatelessWidget {
 
     return PaperCard(
       backgroundColor: Colors.amber[300],
+      borderRadius: 20,
+      elevation: 3,
       borderColor: Colors.orange[800],
+      borderThickness: 10,
+      textureOpacity: 2,
+      margin: const EdgeInsets.all(5),
       textureFit: BoxFit.cover,
       texture: true,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
         child: Row(
           children: [
             Column(

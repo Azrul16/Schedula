@@ -1,8 +1,12 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:schedula/announsmentScreen/announce_model.dart';
+import 'package:schedula/utils/all_dialouge.dart';
+import 'package:schedula/utils/toast_message.dart';
 
 class NewAnnouncement extends StatefulWidget {
   const NewAnnouncement({super.key});
@@ -52,7 +56,23 @@ class _NewAnnouncementState extends State<NewAnnouncement> {
   }
 
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _announceController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+
+  Future<void> sendClassNotesToFirestore(Announcements announcement) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    try {
+      await firestore.collection('announcements').add(announcement.toJson());
+      print('Announcement added to Firestore successfully');
+      Navigator.of(context).pop();
+      Navigator.of(context).pop();
+      showToastMessageNormal('Announcement Published');
+    } catch (e) {
+      print('Error adding ClassNotes to Firestore: $e');
+      showToastMessageWarning('Error uploading');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -67,11 +87,11 @@ class _NewAnnouncementState extends State<NewAnnouncement> {
             maxLength: 25,
             controller: _titleController,
             decoration: const InputDecoration(
-              label: Text('Announcement'),
+              label: Text('Announcement Title'),
             ),
           ),
           TextField(
-            controller: _announceController,
+            controller: _descriptionController,
             decoration: const InputDecoration(
               label: Text('Details'),
             ),
@@ -108,22 +128,22 @@ class _NewAnnouncementState extends State<NewAnnouncement> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  // String? downloadUrl = await uploadFileToFirebase();
-                  // if (downloadUrl != null) {
-                  //   showLoadingDialoge(context);
-                  //   ClassNotes notes = ClassNotes(
-                  //     courseTitle: _titleController.text,
-                  //     downloadURL: downloadUrl,
-                  //     courseTecher: _codeController.text,
-                  //   );
-                  //   await sendClassNotesToFirestore(notes);
-                  // }
+                  String? downloadUrl = await uploadFileToFirebase();
+                  if (downloadUrl != null) {
+                    showLoadingDialoge(context);
+                    Announcements announcement = Announcements(
+                      title: _titleController.text,
+                      downloadURL: downloadUrl,
+                      description: _descriptionController.text,
+                    );
+                    await sendClassNotesToFirestore(announcement);
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                 ),
                 child: const Text(
-                  'Save Notes',
+                  'Publish',
                   style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,

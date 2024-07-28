@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:schedula/class_schedule/class_models.dart';
+import 'package:schedula/classScreen/class_models.dart';
 
 class NewClass extends StatefulWidget {
   const NewClass({super.key, required this.onAddClass});

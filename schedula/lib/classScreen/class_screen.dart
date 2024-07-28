@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:schedula/class_schedule/class_models.dart';
-import 'package:schedula/class_schedule/class_list.dart';
-import 'package:schedula/class_schedule/new_class.dart';
+import 'package:schedula/classScreen/class_models.dart';
+import 'package:schedula/classScreen/class_list.dart';
+import 'package:schedula/classScreen/new_class.dart';
 
 class ClassScren extends StatefulWidget {
   const ClassScren({super.key});
@@ -55,13 +55,7 @@ class _ClassScrenState extends State<ClassScren> {
       backgroundColor: Colors.white,
       body: Container(
         height: double.infinity,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(
-                'assets/class_background.jpg'), // Replace with your image asset path
-            fit: BoxFit.fill,
-          ),
-        ),
+        decoration: const BoxDecoration(),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
