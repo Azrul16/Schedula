@@ -8,15 +8,16 @@ class UserModel {
   final String varsity;
   final String email;
   final Semester semister;
+  final String phoneNumber;
 
-  UserModel({
-    required this.lname,
-    required this.dept,
-    required this.varsity,
-    required this.fname,
-    required this.semister,
-    required this.email,
-  });
+  UserModel(
+      {required this.lname,
+      required this.dept,
+      required this.varsity,
+      required this.fname,
+      required this.semister,
+      required this.email,
+      required this.phoneNumber});
 
   // Convert a JSON object to an UserModel instance
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -26,6 +27,7 @@ class UserModel {
         dept: json['dept'],
         varsity: json['varsity'],
         email: json['email'],
+        phoneNumber: json['phoneNumber'],
         semister: Semester.values.firstWhere(
           (e) => e.toString() == json['semister'],
         ));
@@ -40,6 +42,7 @@ class UserModel {
       'varsity': varsity,
       'email': email,
       'semister': semister.name,
+      'phoneNumber': phoneNumber,
     };
   }
 }

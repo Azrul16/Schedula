@@ -26,6 +26,7 @@ class _CreateUser extends State<CreateUser> {
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
   TextEditingController cpassword = TextEditingController();
+  TextEditingController phoneNumber = TextEditingController();
 
   final formKey = GlobalKey<FormState>();
   @override
@@ -140,6 +141,16 @@ class _CreateUser extends State<CreateUser> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: TextField(
+                  controller: phoneNumber,
+                  maxLength: 11,
+                  keyboardType: TextInputType.number,
+                  decoration:
+                      const InputDecoration(label: Text('Phone Number')),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: TextFormField(
                   validator: (value) {
                     if (value!.contains('@')) {
@@ -209,6 +220,7 @@ class _CreateUser extends State<CreateUser> {
           dept: dept.text,
           varsity: varsity.text,
           fname: firstName.text,
+          phoneNumber: phoneNumber.text,
           semister:
               Semester.values.firstWhere((e) => e.name == selectedSmester),
           email: email.text);
@@ -225,7 +237,7 @@ class _CreateUser extends State<CreateUser> {
 
       Navigator.of(context).pop();
 
-      showToastMessageNormal('Accont creation successful');
+      showToastMessageNormal('Account creation successful');
     }
   }
 }

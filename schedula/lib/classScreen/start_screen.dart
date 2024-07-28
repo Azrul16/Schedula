@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:schedula/announsmentScreen/announcementScreen.dart';
 import 'package:schedula/chatAI/chat_screen.dart';
 import 'package:schedula/noteScreen/note_screen.dart';
+import 'package:schedula/profile/pro_details_list.dart';
 import 'package:schedula/profile/profile_screen.dart';
-import 'package:schedula/class_schedule/class_screen.dart';
+import 'package:schedula/classScreen/class_screen.dart';
 
 class StartScreen extends StatefulWidget {
   const StartScreen({super.key});
@@ -21,7 +22,7 @@ class _StartScreenState extends State<StartScreen> {
     const NoteScreen(),
     const Announcementscreen(),
     const ChatScreen(),
-    const ProfilePage(),
+    const ProfileScreenDemo(),
   ];
 
   void onTappedBar(int index) {
@@ -51,12 +52,12 @@ class _StartScreenState extends State<StartScreen> {
             backgroundColor: Colors.amber,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.business),
+            icon: Icon(Icons.menu_book),
             label: 'Notes',
             backgroundColor: Colors.green,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.school),
+            icon: Icon(Icons.campaign),
             label: 'Announcement',
             backgroundColor: Colors.purple,
           ),
@@ -66,7 +67,7 @@ class _StartScreenState extends State<StartScreen> {
             backgroundColor: Colors.pink,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
+            icon: Icon(Icons.person),
             label: 'Profile',
             backgroundColor: Colors.blue,
           ),

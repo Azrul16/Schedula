@@ -97,6 +97,7 @@ class _LoginState extends State<Login> {
                 padding: const EdgeInsets.symmetric(horizontal: 50),
                 child: TextField(
                   controller: password,
+                  obscureText: true,
                   keyboardType: TextInputType.visiblePassword,
                   decoration: const InputDecoration(
                     label: Text('Paassword'),

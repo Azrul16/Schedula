@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:schedula/class_schedule/class_models.dart';
-import 'package:schedula/class_schedule/class_item.dart';
+import 'package:schedula/classScreen/class_models.dart';
+import 'package:schedula/classScreen/class_item.dart';
 
 class ClassList extends StatelessWidget {
   const ClassList({
@@ -29,8 +29,12 @@ class ClassList extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (ctx, index) {
             final newClass = ClassSchedule.fromJSON(allClasses![index].data());
+            final docID = allClasses[index].id;
 
-            return ClassItem(newClass);
+            return ClassItem(
+              newClass,
+              docID: docID,
+            );
           },
         );
       },

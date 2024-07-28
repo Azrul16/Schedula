@@ -90,9 +90,10 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         appBar: ChatViewAppBar(
           elevation: theme.elevation,
-          backGroundColor: theme.appBarColor,
+          backGroundColor: Colors.pink,
           profilePicture: Data.profileImage,
-          backArrowColor: theme.backArrowColor,
+          onBackPress: () {},
+          backArrowColor: Colors.pink,
           chatTitle: "AI Assistant",
           chatTitleTextStyle: TextStyle(
             color: theme.appBarTitleTextStyle,
@@ -102,17 +103,17 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           userStatus: "online",
           userStatusTextStyle: const TextStyle(color: Colors.grey),
-          actions: [
-            IconButton(
-              onPressed: _onThemeIconTap,
-              icon: Icon(
-                isDarkTheme
-                    ? Icons.brightness_4_outlined
-                    : Icons.dark_mode_outlined,
-                color: theme.themeIconColor,
-              ),
-            ),
-          ],
+          // actions: [
+          //   IconButton(
+          //     onPressed: _onThemeIconTap,
+          //     icon: Icon(
+          //       isDarkTheme
+          //           ? Icons.brightness_4_outlined
+          //           : Icons.dark_mode_outlined,
+          //       color: theme.themeIconColor,
+          //     ),
+          //   ),
+          // ],
         ),
         chatBackgroundConfig: ChatBackgroundConfiguration(
           messageTimeIconColor: theme.messageTimeIconColor,

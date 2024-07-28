@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:schedula/userAccounts/login_page.dart';
 
-import 'package:schedula/class_schedule/start_screen.dart';
+import 'package:schedula/classScreen/start_screen.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
