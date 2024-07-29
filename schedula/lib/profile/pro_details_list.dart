@@ -62,11 +62,12 @@ class ProfileScreenDemo extends StatelessWidget {
                     ),
                     const SizedBox(height: 16.0),
                     Text(
-                      user.fname + ' ' + user.lname,
+                      '${user.fname} ${user.lname}',
                       style: const TextStyle(
                           fontSize: 24.0, fontWeight: FontWeight.bold),
                     ),
-                    Text('@${userData['username'] ?? 'unknown_username'}'),
+                    Text(
+                        '@${user.fname.toLowerCase()}_${user.lname.toLowerCase()}'),
                     const SizedBox(height: 16.0),
                     // Edit Profile button
                     ElevatedButton(

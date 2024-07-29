@@ -29,7 +29,7 @@ class UserModel {
         email: json['email'],
         phoneNumber: json['phoneNumber'],
         semister: Semester.values.firstWhere(
-          (e) => e.toString() == json['semister'],
+          (e) => e.name == json['semister'],
         ));
   }
 

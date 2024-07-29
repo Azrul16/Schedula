@@ -48,6 +48,12 @@ class NotesItem extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             child: Text(notesItem.downloadURL),
           ),
+          Row(
+            children: [
+              const Spacer(),
+              IconButton(onPressed: () {}, icon: const Icon(Icons.download)),
+            ],
+          )
         ],
       ),
     );
