@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:schedula/announsmentScreen/announcementScreen.dart';
 import 'package:schedula/chatAI/chat_screen.dart';
 import 'package:schedula/noteScreen/note_screen.dart';
-import 'package:schedula/profile/pro_details_list.dart';
 import 'package:schedula/profile/profile_screen.dart';
 import 'package:schedula/classScreen/class_screen.dart';
 
@@ -22,7 +21,7 @@ class _StartScreenState extends State<StartScreen> {
     const NoteScreen(),
     const Announcementscreen(),
     const ChatScreen(),
-    const ProfileScreenDemo(),
+    const ProfileScreen(),
   ];
 
   void onTappedBar(int index) {

@@ -15,7 +15,14 @@ class ClassItem extends StatelessWidget {
   final String docID;
 
   Future<void> delete() async {
-    await FirebaseFirestore.instance.collection('claases').doc(docID).delete();
+    try {
+      await FirebaseFirestore.instance
+          .collection('claases')
+          .doc(docID)
+          .delete();
+    } catch (error) {
+      print('Error deleting class: $error');
+    }
     print(docID);
   }
 
@@ -36,10 +43,7 @@ class ClassItem extends StatelessWidget {
                 },
               ),
               TextButton(
-                onPressed: () async {
-                  await delete();
-                  Navigator.of(context).pop(); // Close the dialog
-                },
+                onPressed: delete,
                 child: const Text('Delete'),
               ),
             ],
