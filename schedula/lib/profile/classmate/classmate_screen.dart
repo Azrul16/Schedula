@@ -13,7 +13,7 @@ class ClassmateScreen extends StatelessWidget {
           'Classmates',
           style: GoogleFonts.getFont('Belanosima',
               textStyle: const TextStyle(
-                fontSize: 20,
+                fontSize: 24,
               )),
         ),
       ),
