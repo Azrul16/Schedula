@@ -41,7 +41,26 @@ class ClassmateList extends StatelessWidget {
                       document['fname'] + ' ' + document['lname'],
                       style: GoogleFonts.getFont(
                         'Martian Mono',
-                        textStyle: const TextStyle(fontSize: 18),
+                        textStyle: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      // ignore: prefer_interpolation_to_compose_strings
+                      'ID: ' + document['ID'],
+                      style: GoogleFonts.getFont(
+                        'Martian Mono',
+                        textStyle: const TextStyle(fontSize: 14),
+                      ),
+                    ),
+                    Text(
+                      // ignore: prefer_interpolation_to_compose_strings
+                      'Reg: ' + document['Registration'],
+                      style: GoogleFonts.getFont(
+                        'Martian Mono',
+                        textStyle: const TextStyle(fontSize: 14),
                       ),
                     ),
                     Row(

@@ -22,6 +22,8 @@ class _CreateUser extends State<CreateUser> {
   TextEditingController firstName = TextEditingController();
   TextEditingController lastName = TextEditingController();
   TextEditingController dept = TextEditingController();
+  TextEditingController id = TextEditingController();
+  TextEditingController reg = TextEditingController();
   TextEditingController varsity = TextEditingController();
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
@@ -122,22 +124,50 @@ class _CreateUser extends State<CreateUser> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: TextField(
+                  controller: id,
+                  keyboardType: TextInputType.text,
+                  decoration:
+                      const InputDecoration(label: Text('Student ID No:')),
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: TextField(
+                  controller: reg,
+                  keyboardType: TextInputType.text,
+                  decoration:
+                      const InputDecoration(label: Text('Registration ID No:')),
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: TextField(
                   controller: dept,
-                  maxLength: 20,
                   keyboardType: TextInputType.text,
                   decoration:
                       const InputDecoration(label: Text('Name of Department')),
                 ),
               ),
+              const SizedBox(
+                height: 10,
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: TextField(
                   controller: varsity,
-                  maxLength: 20,
                   keyboardType: TextInputType.text,
                   decoration:
                       const InputDecoration(label: Text('Name of University')),
                 ),
+              ),
+              const SizedBox(
+                height: 10,
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -216,14 +246,16 @@ class _CreateUser extends State<CreateUser> {
     if (formKey.currentState!.validate()) {
       showLoadingDialoge(context);
       UserModel userData = UserModel(
-          lname: lastName.text,
-          dept: dept.text,
-          varsity: varsity.text,
-          fname: firstName.text,
-          phoneNumber: phoneNumber.text,
-          semister:
-              Semester.values.firstWhere((e) => e.name == selectedSmester),
-          email: email.text);
+        lname: lastName.text,
+        dept: dept.text,
+        varsity: varsity.text,
+        fname: firstName.text,
+        phoneNumber: phoneNumber.text,
+        semister: Semester.values.firstWhere((e) => e.name == selectedSmester),
+        email: email.text,
+        id: id.text,
+        reg: reg.text,
+      );
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
               email: email.text, password: password.text);
