@@ -43,7 +43,7 @@ dependencies:
   flutter_blurhash: ^0.8.2
   cloud_firestore: ^5.0.2
   file_picker: ^8.0.6
-  http: ^1.2.1
+  http: ^1.2.2
   provider: ^6.1.2
   google_generative_ai: ^0.4.3
   flutter_dotenv: ^5.1.0
@@ -59,6 +59,11 @@ dependencies:
   firebase_messaging: ^15.0.3
   flutter_local_notifications: ^17.2.1+2
   app_settings: ^5.1.1
+  path_provider: ^2.1.4
+  permission_handler: ^11.3.1
+  dio: ^5.5.0+1
+  cached_network_image: ^3.4.0
+  flutter_cached_pdfview: ^0.4.2
   
 
 dev_dependencies:
