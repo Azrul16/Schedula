@@ -58,7 +58,7 @@ class ProfileScreen extends StatelessWidget {
                     const CircleAvatar(
                       radius: 50.0,
                       backgroundImage: NetworkImage(
-                        "https://avatar-prod-us-east-2.webexcontent.com/Avtr~V1~1eb65fdf-9643-417f-9974-ad72cae0e10f/V1~1a08968daf428f4f5d1ce0f04de95eb40bf8d6d8cb5a0463a6f858f52e3a9df9~49713ad2dabe4cb2a6f83a05c6d6e4f5",
+                        "https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg",
                       ), // Replace with your image path
                     ),
                     const SizedBox(height: 16.0),

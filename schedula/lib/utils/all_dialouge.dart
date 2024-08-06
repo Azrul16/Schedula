@@ -10,3 +10,21 @@ void showLoadingDialoge(BuildContext context) {
     text: 'Fetching your data',
   );
 }
+
+void showSuccessDialoge(BuildContext context) {
+  QuickAlert.show(
+    context: context,
+    type: QuickAlertType.success,
+    title: 'Downloaded Successfully',
+    text: '',
+  );
+}
+
+void showFailedDialoge(BuildContext context) {
+  QuickAlert.show(
+    context: context,
+    type: QuickAlertType.error,
+    title: 'Download Failed',
+    text: '',
+  );
+}
