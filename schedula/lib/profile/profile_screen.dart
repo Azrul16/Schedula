@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:schedula/profile/classmate/classmate_screen.dart';
+import 'package:schedula/profile/total_class/total_class_screen.dart';
 import 'package:schedula/userAccounts/user_model.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -95,6 +96,17 @@ class ProfileScreen extends StatelessWidget {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => const ClassmateScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.class_),
+                      title: const Text('Total classes'),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const TotalClassScreen(),
                           ),
                         );
                       },
