@@ -7,22 +7,23 @@ class ClassSchedule {
   ClassSchedule({
     required this.courseTitle,
     required this.courseTecher,
-    required this.date,
     required this.time,
     required this.courseCode,
+    required this.docID,
   });
 
   final String courseTitle;
   final String courseCode;
   final String courseTecher;
-  final DateTime date;
-  final DateTime time;
 
-  factory ClassSchedule.fromJSON(Map<String, dynamic> json) {
+  final DateTime time;
+  final String docID;
+
+  factory ClassSchedule.fromJSON(Map<String, dynamic> json, String id) {
     return ClassSchedule(
+      docID: id,
       courseTitle: json['course_title'],
       courseTecher: json['course_teacher'],
-      date: (json['date'] as Timestamp).toDate(),
       time: (json['time'] as Timestamp).toDate(),
       courseCode: json['course_code'],
     );
@@ -32,7 +33,6 @@ class ClassSchedule {
     return {
       'course_title': courseTitle,
       'course_teacher': courseTecher,
-      'date': date,
       'time': time,
       'course_code': courseCode,
     };

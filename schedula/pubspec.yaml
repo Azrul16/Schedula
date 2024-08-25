@@ -64,6 +64,7 @@ dependencies:
   dio: ^5.5.0+1
   cached_network_image: ^3.4.0
   flutter_cached_pdfview: ^0.4.2
+  timeline_tile: ^2.0.0
   
 
 dev_dependencies:

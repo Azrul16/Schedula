@@ -1,19 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'package:schedula/classScreen/class_models.dart';
 
-class NewClass extends StatefulWidget {
-  const NewClass({super.key, required this.onAddClass});
-
+class UpdateClass extends StatefulWidget {
+  const UpdateClass(
+      {super.key, required this.onAddClass, required this.classitem});
+  final ClassSchedule classitem;
   final void Function(ClassSchedule classSchedule) onAddClass;
   @override
   State<StatefulWidget> createState() {
-    return _NewClassState();
+    return _UpdateClassState();
   }
 }
 
-class _NewClassState extends State<NewClass> {
+class _UpdateClassState extends State<UpdateClass> {
   final _titleController = TextEditingController();
   final _teacherController = TextEditingController();
   final _courseController = TextEditingController();
@@ -58,53 +60,42 @@ class _NewClassState extends State<NewClass> {
     });
   }
 
-  void _submitClassDate() async {
-    if (_titleController.text.trim().isEmpty ||
-        _selectedDate == null ||
-        _selectedTime == null ||
-        _teacherController.text.trim().isEmpty) {
-      showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Text('Invalid Input'),
-          content: const Text(
-              'Please make sure that you have entered value to all field.'),
-          actions: [
-            TextButton(
-                onPressed: () {
-                  Navigator.pop(ctx);
-                },
-                child: const Text('Okey'))
-          ],
-        ),
-      );
-      return;
-    }
-
-    final classTime = DateTime(_selectedDate!.year, _selectedDate!.month,
-        _selectedDate!.day, _selectedTime!.hour, _selectedTime!.minute);
-
-    final thisClass = ClassSchedule(
-      docID: '',
-      courseTitle: _titleController.text,
-      courseTecher: _teacherController.text,
-      time: classTime,
-      courseCode: _courseController.text,
-    );
-
-    await FirebaseFirestore.instance
-        .collection('classes')
-        .add(thisClass.toJSON());
-    // ignore: use_build_context_synchronously
-    Navigator.pop(context);
-  }
-
   @override
   void dispose() {
     _titleController.dispose();
     _teacherController.dispose();
     _courseController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController.text = widget.classitem.courseTitle;
+    _teacherController.text = widget.classitem.courseTecher;
+    _courseController.text = widget.classitem.courseCode;
+    _selectedTime = widget.classitem.time;
+    _selectedDate = widget.classitem.time;
+  }
+
+  Future<void> updateClass() async {
+    final classTime = DateTime(_selectedDate!.year, _selectedDate!.month,
+        _selectedDate!.day, _selectedTime!.hour, _selectedTime!.minute);
+    ClassSchedule updatedClass = ClassSchedule(
+        docID: '',
+        courseCode: _courseController.text,
+        courseTecher: _teacherController.text,
+        courseTitle: _titleController.text,
+        time: classTime);
+
+    // _selectedDate
+    // _selectedTime
+
+    await FirebaseFirestore.instance
+        .collection('classes')
+        .doc(widget.classitem.docID)
+        .update(updatedClass.toJSON());
+    Navigator.of(context).pop(); // Close the dialog
   }
 
   @override
@@ -182,13 +173,13 @@ class _NewClassState extends State<NewClass> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  _submitClassDate();
+                  updateClass();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                 ),
                 child: const Text(
-                  'Save Class',
+                  'Update Class',
                   style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,

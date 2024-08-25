@@ -4,26 +4,26 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:paper_card/paper_card.dart';
 import 'package:schedula/classScreen/class_models.dart';
+import 'package:schedula/classScreen/update_class.dart';
+import 'package:timeline_tile/timeline_tile.dart';
 
 class ClassItem extends StatelessWidget {
   const ClassItem(
     this.classSchedule, {
-    required this.docID,
     super.key,
   });
   final ClassSchedule classSchedule;
-  final String docID;
 
   Future<void> delete() async {
     try {
       await FirebaseFirestore.instance
-          .collection('claases')
-          .doc(docID)
+          .collection('classes')
+          .doc(classSchedule.docID)
           .delete();
     } catch (error) {
       print('Error deleting class: $error');
     }
-    print(docID);
+    print(classSchedule.docID);
   }
 
   @override
@@ -43,7 +43,10 @@ class ClassItem extends StatelessWidget {
                 },
               ),
               TextButton(
-                onPressed: delete,
+                onPressed: () async {
+                  await delete();
+                  Navigator.of(context).pop(); // Close the dialog
+                },
                 child: const Text('Delete'),
               ),
             ],
@@ -52,82 +55,68 @@ class ClassItem extends StatelessWidget {
       );
     }
 
-    return PaperCard(
-      backgroundColor: Colors.amber[300],
-      borderRadius: 20,
-      elevation: 3,
-      borderColor: Colors.orange[800],
-      borderThickness: 10,
-      textureOpacity: 2,
-      margin: const EdgeInsets.all(5),
-      textureFit: BoxFit.cover,
-      texture: true,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
-        child: Row(
+    return TimelineTile(
+      alignment: TimelineAlign.manual,
+      lineXY: 0.2, // Adjust this value to control the alignment
+      isFirst: true,
+      isLast: false,
+      beforeLineStyle: LineStyle(color: Colors.blue.shade200, thickness: 2),
+      indicatorStyle: IndicatorStyle(
+        width: 20,
+        color: Colors.blue.shade400,
+        padding: const EdgeInsets.all(6),
+      ),
+      endChild: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.yellow,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      classSchedule.courseTitle,
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(classSchedule.courseTecher),
+                    const SizedBox(height: 5),
+                    Text(classSchedule.courseCode),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      startChild: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Column(
-              children: [
-                Text(
-                  DateFormat.jm().format(classSchedule.time),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-                Text(
-                  DateFormat('d MMMM, yyyy').format(classSchedule.date),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+            Text(
+              DateFormat('hh:mm').format(classSchedule.time),
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+              textAlign: TextAlign.center,
             ),
-            const Spacer(),
-            Column(
-              children: [
-                Text(
-                  classSchedule.courseTitle,
-                  style: GoogleFonts.lato(
-                    fontSize: 20,
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  classSchedule.courseTecher,
-                  style: GoogleFonts.lato(
-                    fontStyle: FontStyle.italic,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Text(
-                  classSchedule.courseCode,
-                  style: GoogleFonts.lato(
-                    color: const Color.fromARGB(255, 9, 163, 22),
-                    fontSize: 18,
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ],
-            ),
-            const Spacer(),
-            Column(
-              children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.edit),
-                ),
-                IconButton(
-                  onPressed: () {
-                    showDeleteDialog(context);
-                  },
-                  icon: const Icon(Icons.delete),
-                ),
-              ],
+            Text(
+              DateFormat('d MMM').format(classSchedule.time),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
