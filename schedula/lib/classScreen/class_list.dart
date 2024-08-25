@@ -14,7 +14,10 @@ class ClassList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('classes').snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('classes')
+          .orderBy('time')
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -23,17 +26,26 @@ class ClassList extends StatelessWidget {
         }
 
         final allClasses = snapshot.data?.docs;
+        List<ClassSchedule> allClassesinModel = [];
+
+        for (var e in allClasses!) {
+          allClassesinModel.add(ClassSchedule.fromJSON(e.data(), e.id));
+        }
+
+        List<ClassSchedule> todaysClass = [];
+
+        for (var element in allClassesinModel) {
+          if (element.time.day >= DateTime.now().day) {
+            todaysClass.add(element);
+          }
+        }
         return ListView.builder(
-          itemCount: allClasses?.length,
+          itemCount: todaysClass.length,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (ctx, index) {
-            final newClass = ClassSchedule.fromJSON(allClasses![index].data());
-            final docID = allClasses[index].id;
-
             return ClassItem(
-              newClass,
-              docID: docID,
+              todaysClass[index],
             );
           },
         );

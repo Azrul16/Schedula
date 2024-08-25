@@ -78,24 +78,19 @@ class _NewClassState extends State<NewClass> {
           ],
         ),
       );
+      return;
     }
-    widget.onAddClass(
-      ClassSchedule(
-        courseTitle: _titleController.text,
-        courseTecher: _teacherController.text,
-        date: _selectedDate!,
-        time: _selectedTime!,
-        courseCode: _courseController.text,
-      ),
-    );
+
+    final classTime = DateTime(_selectedDate!.year, _selectedDate!.month,
+        _selectedDate!.day, _selectedTime!.hour, _selectedTime!.minute);
+
     final thisClass = ClassSchedule(
+      docID: '',
       courseTitle: _titleController.text,
       courseTecher: _teacherController.text,
-      date: _selectedDate!,
-      time: _selectedTime!,
+      time: classTime,
       courseCode: _courseController.text,
     );
-    thisClass.toJSON();
 
     await FirebaseFirestore.instance
         .collection('classes')
