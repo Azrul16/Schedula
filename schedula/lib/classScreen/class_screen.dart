@@ -33,6 +33,12 @@ class _ClassScrenState extends State<ClassScren> {
 
   @override
   Widget build(BuildContext context) {
+    DateTime now = DateTime.now();
+    List<String> weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    List<DateTime> weekDates = List.generate(7, (index) {
+      return now.subtract(Duration(days: now.weekday - 1 - index));
+    });
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -58,17 +64,58 @@ class _ClassScrenState extends State<ClassScren> {
         decoration: const BoxDecoration(),
         child: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                'Classes are more Important than sleep',
+                'Today',
                 style: GoogleFonts.getFont(
-                  'Kalnia',
-                  textStyle: const TextStyle(
-                      fontSize: 35,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold),
+                  'Caprasimo',
+                  fontSize: 26,
+                  color: Colors.green,
                 ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: List.generate(
+                  7,
+                  (index) {
+                    bool isToday = weekDates[index].day == now.day &&
+                        weekDates[index].month == now.month;
+                    return Column(
+                      children: [
+                        Text(
+                          weekdays[index],
+                          style: TextStyle(
+                            fontWeight:
+                                isToday ? FontWeight.bold : FontWeight.normal,
+                            color: isToday ? Colors.green : Colors.grey,
+                            fontSize: 20,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          weekDates[index].day.toString(),
+                          style: TextStyle(
+                            fontWeight:
+                                isToday ? FontWeight.bold : FontWeight.normal,
+                            color: isToday ? Colors.green : Colors.black,
+                            fontSize: 20,
+                          ),
+                        ),
+                        if (isToday)
+                          Container(
+                            margin: const EdgeInsets.only(top: 2),
+                            height: 2,
+                            width: 20,
+                            color: Colors.green,
+                          ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(
+                height: 20,
               ),
               ClassList(selectedSchedule: _selectedSchedule),
               const SizedBox(

@@ -47,10 +47,17 @@ class AnnounceItem extends StatelessWidget {
               ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            child: Text(announceItem.downloadURL),
-          ),
+          (announceItem.downloadURL.isEmpty)
+              ? const Text("No download File")
+              : Row(
+                  children: [
+                    const Spacer(),
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.download),
+                    ),
+                  ],
+                ),
         ],
       ),
     );

@@ -38,6 +38,7 @@ class _NewAnnouncementState extends State<NewAnnouncement> {
     try {
       if (file == null) {
         print('No file selected');
+
         return null;
       }
 
@@ -134,6 +135,14 @@ class _NewAnnouncementState extends State<NewAnnouncement> {
                     Announcements announcement = Announcements(
                       title: _titleController.text,
                       downloadURL: downloadUrl,
+                      description: _descriptionController.text,
+                    );
+                    await sendClassNotesToFirestore(announcement);
+                  } else {
+                    showLoadingDialoge(context);
+                    Announcements announcement = Announcements(
+                      title: _titleController.text,
+                      downloadURL: '',
                       description: _descriptionController.text,
                     );
                     await sendClassNotesToFirestore(announcement);

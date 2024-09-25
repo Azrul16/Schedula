@@ -86,7 +86,7 @@ class _NewNoteState extends State<NewNote> {
           TextField(
             controller: _titleController,
             decoration: const InputDecoration(
-              label: Text('Course Title'),
+              label: Text('Note Title'),
             ),
           ),
           TextField(

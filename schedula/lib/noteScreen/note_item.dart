@@ -117,10 +117,6 @@ class _NotesItemState extends State<NotesItem> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            child: Text(widget.notesItem.downloadURL),
-          ),
           Row(
             children: [
               const Spacer(),

@@ -1,5 +1,6 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:schedula/announsmentScreen/announcementScreen.dart';
+import 'package:schedula/announsmentScreen/announcement_screen.dart';
 import 'package:schedula/chatAI/chat_screen.dart';
 import 'package:schedula/noteScreen/note_screen.dart';
 import 'package:schedula/profile/profile_screen.dart';
@@ -32,6 +33,26 @@ class _StartScreenState extends State<StartScreen> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    requesPermission();
+  }
+
+  Future<void> requesPermission() async {
+    // ignore: unused_local_variable
+    final notificationSettings =
+        await FirebaseMessaging.instance.requestPermission(provisional: true);
+
+// For apple platforms, ensure the APNS token is available before making any FCM plugin API calls
+    final apnsToken = await FirebaseMessaging.instance.getToken();
+    if (apnsToken != null) {
+      print(apnsToken);
+      print('-----------------');
+    }
+  }
+
+  @override
   Widget build(context) {
     return Scaffold(
       body: PageView(
@@ -46,7 +67,7 @@ class _StartScreenState extends State<StartScreen> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.ballot_outlined),
+            icon: Icon(Icons.today_outlined),
             label: 'Classes',
             backgroundColor: Colors.amber,
           ),
