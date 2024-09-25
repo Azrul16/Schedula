@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
-class TotalClassScreen extends StatefulWidget {
-  const TotalClassScreen({super.key});
+class TotalClass extends StatefulWidget {
+  const TotalClass({super.key});
 
   @override
-  State<TotalClassScreen> createState() => _TotalClassScreenState();
+  State<TotalClass> createState() => _TotalClassScreenState();
 }
 
-class _TotalClassScreenState extends State<TotalClassScreen> {
+class _TotalClassScreenState extends State<TotalClass> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Total class list'),
+        title: const Text('Total class list'),
       ),
     );
   }

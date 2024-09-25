@@ -44,16 +44,6 @@ class _AnnouncementscreenState extends State<Announcementscreen> {
         child: SingleChildScrollView(
             child: Column(
           children: [
-            Text(
-              'The more you read,\n the more you learn',
-              style: GoogleFonts.getFont(
-                'Lumanosimo',
-                textStyle: const TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
             AnnounceList(
               selectedAnnounce: selectedAnnounce,
             )

@@ -88,9 +88,6 @@ class _UpdateClassState extends State<UpdateClass> {
         courseTitle: _titleController.text,
         time: classTime);
 
-    // _selectedDate
-    // _selectedTime
-
     await FirebaseFirestore.instance
         .collection('classes')
         .doc(widget.classitem.docID)

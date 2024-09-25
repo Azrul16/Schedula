@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:schedula/classScreen/class_models.dart';
 
+import 'package:http/http.dart' as http;
+// For encoding URL parameters
+
 class NewClass extends StatefulWidget {
   const NewClass({super.key, required this.onAddClass});
 
@@ -183,6 +186,10 @@ class _NewClassState extends State<NewClass> {
               ElevatedButton(
                 onPressed: () {
                   _submitClassDate();
+                  sendTopicNotification(
+                    _titleController.text,
+                    _teacherController.text,
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
@@ -200,5 +207,38 @@ class _NewClassState extends State<NewClass> {
         ],
       ),
     );
+  }
+}
+
+// Function to send GET request to the endpoint
+Future<void> sendTopicNotification(String title, String body) async {
+  // The base URL of your Cloud Function
+  const String baseUrl =
+      'https://us-central1-schedula-6bd5d.cloudfunctions.net/sendTopicNotification';
+
+  // Query parameters
+  final Map<String, String> queryParams = {
+    'topic': 'general',
+    'title': title,
+    'body': body,
+  };
+
+  // Encode the parameters into the URL
+  final Uri uri = Uri.parse(baseUrl).replace(queryParameters: queryParams);
+
+  try {
+    // Send GET request to the Firebase Cloud Function
+    final response = await http.get(uri);
+
+    // Check the response status code
+    if (response.statusCode == 200) {
+      print('Notification sent successfully!');
+    } else {
+      print('Failed to send notification. Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
+    }
+  } catch (e) {
+    // Handle any errors that occurred during the request
+    print('Error occurred while sending notification: $e');
   }
 }

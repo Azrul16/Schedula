@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:schedula/profile/classmate/classmate_screen.dart';
+import 'package:schedula/profile/profile_details/profile_details.dart';
+import 'package:schedula/profile/profile_menu.dart';
 import 'package:schedula/profile/total_class/total_class_screen.dart';
 import 'package:schedula/userAccounts/user_model.dart';
 
@@ -33,6 +35,32 @@ class ProfileScreen extends StatelessWidget {
     return null; // No matching user found
   }
 
+  void showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Logout'),
+          content: const Text('Are you sure you want to Logout?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+              },
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +87,7 @@ class ProfileScreen extends StatelessWidget {
                     const CircleAvatar(
                       radius: 50.0,
                       backgroundImage: NetworkImage(
-                        "https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg",
+                        "https://st3.depositphotos.com/32927174/36182/v/450/depositphotos_361823194-stock-illustration-glowing-neon-line-create-account.jpg",
                       ), // Replace with your image path
                     ),
                     const SizedBox(height: 16.0),
@@ -71,28 +99,22 @@ class ProfileScreen extends StatelessWidget {
                     Text(
                         '@${user.fname.toLowerCase()}_${user.lname.toLowerCase()}'),
                     const SizedBox(height: 16.0),
-                    // Edit Profile button
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: const Text(
-                        'Edit Profile',
-                        style: TextStyle(
-                            fontSize: 16.0, fontWeight: FontWeight.bold),
-                      ),
-                    ),
                     const SizedBox(height: 32.0),
-                    // Menu items
-                    ListTile(
-                      leading: const Icon(Icons.payment),
-                      title: const Text('Profile Details'),
-                      onTap: () {
-                        // Handle Profile Details tap
+                    ProfileMenu(
+                      text: "Profile Details",
+                      icon: Icons.person_2_rounded,
+                      press: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const ProfileDetails(),
+                          ),
+                        );
                       },
                     ),
-                    ListTile(
-                      leading: const Icon(Icons.group),
-                      title: const Text('Classmates'),
-                      onTap: () {
+                    ProfileMenu(
+                      text: "Classmates",
+                      icon: Icons.group_rounded,
+                      press: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => const ClassmateScreen(),
@@ -100,34 +122,48 @@ class ProfileScreen extends StatelessWidget {
                         );
                       },
                     ),
-                    ListTile(
-                      leading: const Icon(Icons.class_),
-                      title: const Text('Total classes'),
-                      onTap: () {
+                    ProfileMenu(
+                      text: "Total classes",
+                      icon: Icons.class_rounded,
+                      press: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => const TotalClassScreen(),
+                            builder: (ctx) => const TotalClass(),
                           ),
                         );
                       },
                     ),
-                    ListTile(
-                      leading: const Icon(Icons.info),
-                      title: const Text('Information'),
-                      onTap: () {
-                        // Handle Information tap
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.logout),
-                      title: const Text(
-                        'Log out',
-                        style: TextStyle(
-                            color: Colors.red, fontWeight: FontWeight.w500),
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 50, vertical: 10),
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          foregroundColor: const Color(0xFFFF7643),
+                          padding: const EdgeInsets.all(20),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30)),
+                          backgroundColor: Colors.red[400],
+                        ),
+                        onPressed: () {
+                          showLogoutDialog(context);
+                        },
+                        child: const Row(
+                          children: [
+                            Icon(Icons.logout),
+                            SizedBox(width: 5),
+                            Expanded(
+                              child: Text(
+                                "Logout",
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 0, 0, 0),
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      onTap: () {
-                        FirebaseAuth.instance.signOut();
-                      },
                     ),
                   ],
                 ),

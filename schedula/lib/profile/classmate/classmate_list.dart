@@ -75,7 +75,7 @@ class ClassmateList extends StatelessWidget {
                         const Spacer(),
                         IconButton(
                           onPressed: () {},
-                          icon: Icon(Icons.mail),
+                          icon: const Icon(Icons.mail),
                         ),
                       ],
                     ),

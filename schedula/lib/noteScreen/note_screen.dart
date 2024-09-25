@@ -43,19 +43,7 @@ class _NoteScreenState extends State<NoteScreen> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          children: [
-            Text(
-              'The more you read,\n the more you learn',
-              style: GoogleFonts.getFont(
-                'Lumanosimo',
-                textStyle: const TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            NotesList(selectedNote: selectedNote)
-          ],
+          children: [NotesList(selectedNote: selectedNote)],
         ),
       ),
       floatingActionButton: FloatingActionButton(

@@ -46,6 +46,9 @@ class ClassList extends StatelessWidget {
           itemBuilder: (ctx, index) {
             return ClassItem(
               todaysClass[index],
+              isStart: index == 0,
+              isEnd: index == todaysClass.length - 1,
+              task: todaysClass.length,
             );
           },
         );

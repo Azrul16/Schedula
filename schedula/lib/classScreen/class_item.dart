@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:paper_card/paper_card.dart';
 import 'package:schedula/classScreen/class_models.dart';
 import 'package:schedula/classScreen/update_class.dart';
 import 'package:timeline_tile/timeline_tile.dart';
@@ -11,8 +9,14 @@ class ClassItem extends StatelessWidget {
   const ClassItem(
     this.classSchedule, {
     super.key,
+    required this.isStart,
+    required this.isEnd,
+    required this.task,
   });
   final ClassSchedule classSchedule;
+  final bool isStart;
+  final bool isEnd;
+  final int task;
 
   Future<void> delete() async {
     try {
@@ -55,15 +59,19 @@ class ClassItem extends StatelessWidget {
       );
     }
 
+    DateTime now = DateTime.now();
+
     return TimelineTile(
       alignment: TimelineAlign.manual,
-      lineXY: 0.2, // Adjust this value to control the alignment
-      isFirst: true,
-      isLast: false,
-      beforeLineStyle: LineStyle(color: Colors.blue.shade200, thickness: 2),
+      lineXY: 0.25, // Adjust this value to control the alignment
+      isFirst: isStart,
+      isLast: isEnd,
+      beforeLineStyle: const LineStyle(color: Colors.blueGrey, thickness: 5),
       indicatorStyle: IndicatorStyle(
         width: 20,
-        color: Colors.blue.shade400,
+        color: classSchedule.time.isAfter(now)
+            ? Colors.blue.shade400
+            : Colors.blueGrey,
         padding: const EdgeInsets.all(6),
       ),
       endChild: Padding(
@@ -71,7 +79,9 @@ class ClassItem extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.yellow,
+            color: classSchedule.time.isAfter(now)
+                ? Colors.amber.shade300
+                : Colors.blueGrey.shade200,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
@@ -92,33 +102,65 @@ class ClassItem extends StatelessWidget {
                   ],
                 ),
               ),
+              Column(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (ctx) {
+                            return UpdateClass(
+                              classitem: classSchedule,
+                              onAddClass: (_) {},
+                            );
+                          });
+                    },
+                    icon: const Icon(Icons.edit),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      showDeleteDialog(context);
+                    },
+                    icon: const Icon(Icons.delete),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
       ),
       startChild: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              DateFormat('hh:mm').format(classSchedule.time),
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
+        child: Container(
+          decoration: BoxDecoration(
+            color: classSchedule.time.isAfter(now)
+                ? Colors.amber.shade300
+                : Colors.blueGrey.shade200,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                DateFormat('hh:mm').format(classSchedule.time),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-            Text(
-              DateFormat('d MMM').format(classSchedule.time),
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+              Text(
+                DateFormat('d MMM').format(classSchedule.time),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
