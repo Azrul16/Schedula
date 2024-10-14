@@ -143,9 +143,9 @@ class ClassItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                DateFormat('hh:mm').format(classSchedule.time),
+                DateFormat('hh:mm a').format(classSchedule.time),
                 style: const TextStyle(
-                  fontSize: 20,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Colors.green,
                 ),

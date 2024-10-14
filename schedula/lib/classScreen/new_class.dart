@@ -160,7 +160,7 @@ class _NewClassState extends State<NewClass> {
               Text(
                 _selectedDate == null
                     ? "Select a Date"
-                    : DateFormat('d MMMM, yyyy').format(_selectedDate!),
+                    : DateFormat('d MMMM').format(_selectedDate!),
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,

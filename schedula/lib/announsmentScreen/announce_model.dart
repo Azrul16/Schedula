@@ -1,8 +1,9 @@
 class Announcements {
-  Announcements(
-      {required this.title,
-      required this.description,
-      required this.downloadURL});
+  Announcements({
+    required this.title,
+    required this.description,
+    required this.downloadURL,
+  });
 
   final String title;
   final String downloadURL;

@@ -21,15 +21,22 @@ class NotesList extends StatelessWidget {
         }
 
         final allClasses = snapshot.data?.docs;
+        List<ClassNotes> newNotes = [];
+
+        for (var e in allClasses!) {
+          newNotes.add(ClassNotes.fromJSON(e.data(), e.id));
+        }
+
         return ListView.builder(
-          itemCount: allClasses?.length,
+          itemCount: allClasses.length,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (ctx, index) {
-            final newNotes = ClassNotes.fromJSON(allClasses![index].data());
-
             return NotesItem(
-              notesItem: newNotes,
+              newNotes[index],
+              isStart: index == 0,
+              isEnd: index == newNotes.length - 1,
+              task: newNotes.length,
             );
           },
         );

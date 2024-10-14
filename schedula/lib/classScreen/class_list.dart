@@ -39,19 +39,28 @@ class ClassList extends StatelessWidget {
             todaysClass.add(element);
           }
         }
-        return ListView.builder(
-          itemCount: todaysClass.length,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemBuilder: (ctx, index) {
-            return ClassItem(
-              todaysClass[index],
-              isStart: index == 0,
-              isEnd: index == todaysClass.length - 1,
-              task: todaysClass.length,
-            );
-          },
-        );
+        if (todaysClass.isEmpty) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/no_class.jpg'),
+            ],
+          );
+        } else {
+          return ListView.builder(
+            itemCount: todaysClass.length,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (ctx, index) {
+              return ClassItem(
+                todaysClass[index],
+                isStart: index == 0,
+                isEnd: index == todaysClass.length - 1,
+                task: todaysClass.length,
+              );
+            },
+          );
+        }
       },
     );
   }

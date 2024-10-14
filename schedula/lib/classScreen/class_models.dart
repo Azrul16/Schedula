@@ -15,7 +15,6 @@ class ClassSchedule {
   final String courseTitle;
   final String courseCode;
   final String courseTecher;
-
   final DateTime time;
   final String docID;
 

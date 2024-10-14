@@ -29,7 +29,7 @@ class AnnounceItem extends StatelessWidget {
                 child: Text(
                   announceItem.title,
                   style: GoogleFonts.getFont(
-                    'Lumanosimo',
+                    'Montserrat',
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -40,7 +40,7 @@ class AnnounceItem extends StatelessWidget {
                 child: Text(
                   announceItem.description,
                   style: GoogleFonts.getFont(
-                    'Lumanosimo',
+                    'Montserrat',
                     fontSize: 15,
                   ),
                 ),
