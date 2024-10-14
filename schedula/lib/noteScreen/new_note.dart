@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:schedula/classScreen/new_class.dart';
 import 'package:schedula/noteScreen/notes_model.dart';
 import 'package:schedula/utils/all_dialouge.dart';
 import 'package:schedula/utils/toast_message.dart';
@@ -134,8 +135,13 @@ class _NewNoteState extends State<NewNote> {
                       courseTitle: _titleController.text,
                       downloadURL: downloadUrl,
                       courseTecher: _codeController.text,
+                      docID: '',
                     );
                     await sendClassNotesToFirestore(notes);
+                    sendTopicNotification(
+                      _titleController.text,
+                      _codeController.text,
+                    );
                   }
                 },
                 style: ElevatedButton.styleFrom(

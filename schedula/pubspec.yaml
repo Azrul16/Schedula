@@ -94,6 +94,7 @@ flutter:
     - assets/images/appstore.png
     - assets/class_background.jpg
     - assets/class_background.png
+    - assets/no_class.jpg
     - .env
     # - images/a_dot_burr.jpeg
     # - images/a_dot_ham.jpeg

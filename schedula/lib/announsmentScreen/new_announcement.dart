@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:schedula/announsmentScreen/announce_model.dart';
+import 'package:schedula/classScreen/new_class.dart';
 import 'package:schedula/utils/all_dialouge.dart';
 import 'package:schedula/utils/toast_message.dart';
 
@@ -147,6 +148,10 @@ class _NewAnnouncementState extends State<NewAnnouncement> {
                     );
                     await sendClassNotesToFirestore(announcement);
                   }
+                  sendTopicNotification(
+                    _titleController.text,
+                    _descriptionController.text,
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
