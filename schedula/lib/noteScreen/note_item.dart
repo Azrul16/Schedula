@@ -111,7 +111,7 @@ class _NotesItemState extends State<NotesItem> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('Delete'),
-            content: const Text('Are you sure you want to delete this class?'),
+            content: const Text('Are you sure you want to delete this note?'),
             actions: <Widget>[
               TextButton(
                 child: const Text('Cancel'),
@@ -121,7 +121,7 @@ class _NotesItemState extends State<NotesItem> {
               ),
               TextButton(
                 onPressed: () async {
-                  // await delete();
+                  await widget.delete();
                   Navigator.of(context).pop(); // Close the dialog
                 },
                 child: const Text('Delete'),
@@ -171,12 +171,25 @@ class _NotesItemState extends State<NotesItem> {
             ],
           ),
           const Spacer(),
-          IconButton(
-              onPressed: () {
-                String downloadURL = widget.notesItem.downloadURL;
-                downloadFile(downloadURL);
-              },
-              icon: const Icon(Icons.download)),
+          Column(
+            children: [
+              IconButton(
+                onPressed: () {
+                  showDeleteDialog(context);
+                },
+                icon: const Icon(Icons.delete),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              IconButton(
+                  onPressed: () {
+                    String downloadURL = widget.notesItem.downloadURL;
+                    downloadFile(downloadURL);
+                  },
+                  icon: const Icon(Icons.download)),
+            ],
+          ),
         ],
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:schedula/utils/auth_gate.dart';
 
 class TotalClass extends StatefulWidget {
   const TotalClass({super.key});
@@ -13,6 +14,11 @@ class _TotalClassScreenState extends State<TotalClass> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Total class list'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await checkUserAuthAndGetSemester();
+        },
       ),
     );
   }

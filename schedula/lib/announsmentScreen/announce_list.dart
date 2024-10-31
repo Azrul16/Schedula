@@ -18,17 +18,22 @@ class AnnounceList extends StatelessWidget {
           );
         }
 
-        final allClasses = snapshot.data?.docs;
+        final allAnnouncement = snapshot.data?.docs;
+        List<Announcements> newAnnouncement = [];
+
+        for (var e in allAnnouncement!) {
+          newAnnouncement.add(Announcements.fromJSON(e.data(), e.id));
+        }
         return ListView.builder(
-          itemCount: allClasses?.length,
+          itemCount: allAnnouncement.length,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (ctx, index) {
-            final newAnnounce =
-                Announcements.fromJSON(allClasses![index].data());
-
             return AnnounceItem(
-              announceItem: newAnnounce,
+              newAnnouncement[index],
+              isStart: index == 0,
+              isEnd: index == allAnnouncement.length - 1,
+              task: allAnnouncement.length,
             );
           },
         );
