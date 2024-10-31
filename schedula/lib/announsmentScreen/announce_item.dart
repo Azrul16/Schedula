@@ -1,12 +1,31 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:paper_card/paper_card.dart';
 import 'package:schedula/announsmentScreen/announce_model.dart';
 
 class AnnounceItem extends StatelessWidget {
-  const AnnounceItem({super.key, required this.announceItem});
-
+  const AnnounceItem(this.announceItem,
+      {super.key,
+      required this.isStart,
+      required this.isEnd,
+      required this.task});
+  final bool isStart;
+  final bool isEnd;
+  final int task;
   final Announcements announceItem;
+
+  Future<void> delete() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('notes')
+          .doc(announceItem.docID)
+          .delete();
+    } catch (error) {
+      print('Error deleting class: $error');
+    }
+    print(announceItem.docID);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,16 +43,23 @@ class AnnounceItem extends StatelessWidget {
         children: [
           Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                child: Text(
-                  announceItem.title,
-                  style: GoogleFonts.getFont(
-                    'Montserrat',
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+              Row(
+                children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    child: Text(
+                      announceItem.title,
+                      style: GoogleFonts.getFont(
+                        'Montserrat',
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                ),
+                  Spacer(),
+                  IconButton(onPressed: () {}, icon: Icon(Icons.delete))
+                ],
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),

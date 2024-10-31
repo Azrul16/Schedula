@@ -137,6 +137,7 @@ class _NewAnnouncementState extends State<NewAnnouncement> {
                       title: _titleController.text,
                       downloadURL: downloadUrl,
                       description: _descriptionController.text,
+                      docID: '',
                     );
                     await sendClassNotesToFirestore(announcement);
                   } else {
@@ -145,6 +146,7 @@ class _NewAnnouncementState extends State<NewAnnouncement> {
                       title: _titleController.text,
                       downloadURL: '',
                       description: _descriptionController.text,
+                      docID: '',
                     );
                     await sendClassNotesToFirestore(announcement);
                   }

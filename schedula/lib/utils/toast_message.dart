@@ -33,3 +33,34 @@ void showToastMessageProceed(String message) {
       textColor: Colors.white,
       fontSize: 16.0);
 }
+
+void showToastMessageDownloading(String message, BuildContext context) {
+  final scaffold = ScaffoldMessenger.of(context);
+  scaffold.showSnackBar(
+    SnackBar(
+      content: Text(message),
+    ),
+  );
+}
+
+void showLoadingDialog(BuildContext context, String message) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: Row(
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(width: 20),
+            Expanded(child: Text(message)),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+void hideLoadingDialog(BuildContext context) {
+  Navigator.of(context, rootNavigator: true).pop();
+}
