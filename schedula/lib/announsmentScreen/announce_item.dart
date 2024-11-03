@@ -57,8 +57,8 @@ class AnnounceItem extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Spacer(),
-                  IconButton(onPressed: () {}, icon: Icon(Icons.delete))
+                  const Spacer(),
+                  IconButton(onPressed: () {}, icon: const Icon(Icons.delete))
                 ],
               ),
               Padding(
