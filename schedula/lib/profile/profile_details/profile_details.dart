@@ -126,7 +126,7 @@ class EditProfileScreen extends StatelessWidget {
                           ),
                         ),
                         UserInfoEditField(
-                          text: "REgistration",
+                          text: "Registration",
                           child: TextFormField(
                             initialValue: user.reg,
                             decoration: InputDecoration(
