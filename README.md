@@ -79,3 +79,52 @@ After adding the configuration file(s), run the following command to ensure your
 flutter pub get
 ```
 
+## How to Use
+1. **Login**: Users must have an account to log in. Provide your email and password to access the app.
+2. **Create Account**: New users must provide:
+   - Full Name
+   - Semester
+   - ID
+   - Registration Number
+   - Department
+   - University Name
+   - Email
+   - Password
+3. **Features**:
+   - Navigate to the scheduling section to set up your timetable.
+   - Upload and view notes under the notes section.
+   - Check announcements for updates.
+   - Chat with the AI assistant for help.
+   - Manage and edit your profile, and access classmates' details in the profile section.
+
+## Contributors
+If you would like to contribute to Schedula, follow these steps:
+
+1. **Fork the Repository**: Click on the "Fork" button at the top of the repository page to create a personal copy.
+2. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/Azrul16/schedula.git
+   ```
+3. **Create New Branch**:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+4. **Make changes:** Impliment your changes or new features in the project
+5. **Tast your changes:** Ensure that your changes work as expected without breaking existing functionality
+6. **Commit Your Changes**:
+   ```bash
+   git commit -m "Add: description of your changes"
+   ```
+7. **Push Your Changes**:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+8. **Submit a Pull Request**: Go to the original repository, click on "Pull Requests," and submit your PR. Include a clear description of the changes you’ve made.
+
+## We appreciate your contributions to improving Schedula!
+
+
+
+### Author
+- [**Azrul Amaline**](https://github.com/Azrul16)  
+- **Email**: [azrul.amaline16@gmail.com](mailto:azrul.amaline16@gmail.com)
