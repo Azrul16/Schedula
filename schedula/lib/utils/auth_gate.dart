@@ -56,3 +56,27 @@ Future<String?> checkUserAuthAndGetSemester() async {
     return null;
   }
 }
+
+class GlobalUtils {
+  static Future<bool> isAdmin() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null && user.email != null) {
+        if (user.email == "azrul@gmail.com") {
+          print("User's email matches: ${user.email}");
+          return true;
+        } else {
+          print("User's email does not match: ${user.email}");
+          return false;
+        }
+      } else {
+        print("User is not logged in or email is null.");
+        return false;
+      }
+    } catch (e) {
+      print("Error: $e");
+      return false;
+    }
+  }
+}
