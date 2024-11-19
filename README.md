@@ -50,3 +50,32 @@ To use this app, you need to create an account with the following information:
 1. Clone the repository:
    ```bash
    git clone https://github.com/Azrul16/Schedula.git
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd schedula
+   ```
+3. Install dependencies:
+   ```bash
+   flutter pub get
+   ```
+4. Ensure Flutter is Properly Configured
+Make sure Flutter is installed and configured on your system. If Flutter is not yet set up, visit the [Flutter official website](https://flutter.dev/docs/get-started/install) for installation instructions.
+
+5. Configure Firebase
+Follow these steps to configure Firebase for the project:
+
+   #### Android
+      1. Download the `google-services.json` file from your Firebase console.
+      2. Place the file in the `android/app/` directory of your Flutter project.
+
+   #### iOS
+      1. Download the `GoogleService-Info.plist` file from your Firebase console.
+      2. Place the file in the `ios/Runner/` directory of your Flutter project.
+
+### 3. Final Step
+After adding the configuration file(s), run the following command to ensure your project is set up correctly:
+```bash
+flutter pub get
+```
+
