@@ -5,6 +5,7 @@ import 'package:schedula/userAccounts/user_model.dart';
 
 class ProfileDetails extends StatelessWidget {
   const ProfileDetails({super.key});
+
   Future<Map<String, dynamic>?> getUserData() async {
     User? currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
@@ -32,216 +33,205 @@ class EditProfileScreen extends StatelessWidget {
   const EditProfileScreen({super.key});
 
   Future<Map<String, dynamic>?> getUserData() async {
-    // Get the currently logged-in user
     User? currentUser = FirebaseAuth.instance.currentUser;
 
     if (currentUser == null) {
-      // User is not logged in
       return null;
     }
 
     String currentEmail = currentUser.email!;
-
-    // Query the Firestore users collection
     QuerySnapshot querySnapshot =
         await FirebaseFirestore.instance.collection('users').get();
 
     for (var doc in querySnapshot.docs) {
       if (doc['email'] == currentEmail) {
-        return doc.data()
-            as Map<String, dynamic>; // Return all fields of the matching user
+        return doc.data() as Map<String, dynamic>;
       }
     }
 
-    return null; // No matching user found
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        centerTitle: false,
+        centerTitle: true,
         elevation: 0,
-        backgroundColor: const Color(0xFF00BF6D),
-        foregroundColor: Colors.white,
+        backgroundColor: const Color(0xFF2196F3),
         title: const Text("Edit Profile"),
       ),
-      body: FutureBuilder<Map<String, dynamic>?>(
-        future: getUserData(),
-        builder: (BuildContext context,
-            AsyncSnapshot<Map<String, dynamic>?> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else {
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF2196F3), // Light blue (AppBar color)
+              Color(0xFF1976D2), // Darker blue
+            ],
+          ),
+        ),
+        child: FutureBuilder<Map<String, dynamic>?>(
+          future: getUserData(),
+          builder: (BuildContext context,
+              AsyncSnapshot<Map<String, dynamic>?> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (!snapshot.hasData || snapshot.data == null) {
+              return const Center(child: Text("Failed to load user data"));
+            }
+
             Map<String, dynamic> userData = snapshot.data!;
             final user = UserModel.fromJson(userData);
+
             return SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
+                  const SizedBox(height: 10),
                   ProfilePic(
                     image:
                         'https://st3.depositphotos.com/32927174/36182/v/450/depositphotos_361823194-stock-illustration-glowing-neon-line-create-account.jpg',
-                    imageUploadBtnPress: () {},
+                    imageUploadBtnPress: () {
+                      // Logic for uploading image
+                    },
                   ),
-                  const Divider(),
-                  Form(
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 5,
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
                     child: Column(
                       children: [
                         UserInfoEditField(
                           text: "Name",
-                          child: TextFormField(
+                          child: _buildTextFormField(
                             initialValue: '${user.fname} ${user.lname}',
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor:
-                                  const Color(0xFF00BF6D).withOpacity(0.05),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0 * 1.5, vertical: 16.0),
-                              border: const OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50)),
-                              ),
-                            ),
+                            hintText: "Enter your full name",
                           ),
                         ),
+                        const SizedBox(height: 10),
                         UserInfoEditField(
                           text: "ID",
-                          child: TextFormField(
+                          child: _buildTextFormField(
                             initialValue: user.id,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor:
-                                  const Color(0xFF00BF6D).withOpacity(0.05),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0 * 1.5, vertical: 16.0),
-                              border: const OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50)),
-                              ),
-                            ),
+                            hintText: "Enter your ID",
                           ),
                         ),
+                        const SizedBox(height: 10),
                         UserInfoEditField(
                           text: "Registration",
-                          child: TextFormField(
+                          child: _buildTextFormField(
                             initialValue: user.reg,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor:
-                                  const Color(0xFF00BF6D).withOpacity(0.05),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0 * 1.5, vertical: 16.0),
-                              border: const OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50)),
-                              ),
-                            ),
+                            hintText: "Enter your registration number",
                           ),
                         ),
+                        const SizedBox(height: 10),
                         UserInfoEditField(
                           text: "Email",
-                          child: TextFormField(
+                          child: _buildTextFormField(
                             initialValue: user.email,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor:
-                                  const Color(0xFF00BF6D).withOpacity(0.05),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0 * 1.5, vertical: 16.0),
-                              border: const OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50)),
-                              ),
-                            ),
+                            hintText: "Enter your email",
                           ),
                         ),
+                        const SizedBox(height: 10),
                         UserInfoEditField(
                           text: "Phone",
-                          child: TextFormField(
+                          child: _buildTextFormField(
                             initialValue: user.phoneNumber,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor:
-                                  const Color(0xFF00BF6D).withOpacity(0.05),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0 * 1.5, vertical: 16.0),
-                              border: const OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50)),
-                              ),
-                            ),
+                            hintText: "Enter your phone number",
                           ),
                         ),
+                        const SizedBox(height: 10),
                         UserInfoEditField(
                           text: "Department",
-                          child: TextFormField(
+                          child: _buildTextFormField(
                             initialValue: user.dept,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor:
-                                  const Color(0xFF00BF6D).withOpacity(0.05),
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0 * 1.5, vertical: 16.0),
-                              border: const OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50)),
+                            hintText: "Enter your department",
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 15, horizontal: 30),
+                              ),
+                              child: const Text(
+                                "Cancel",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w600),
                               ),
                             ),
-                          ),
+                            ElevatedButton(
+                              onPressed: () {
+                                // Save Update logic
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF2196F3),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 15, horizontal: 30),
+                              ),
+                              child: const Text(
+                                "Save",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      SizedBox(
-                        width: 120,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context)
-                                .textTheme
-                                .bodyLarge!
-                                .color!
-                                .withOpacity(0.08),
-                            foregroundColor: Colors.white,
-                            minimumSize: const Size(double.infinity, 48),
-                            shape: const StadiumBorder(),
-                          ),
-                          child: const Text("Cancel"),
-                        ),
-                      ),
-                      const SizedBox(width: 16.0),
-                      SizedBox(
-                        width: 160,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF00BF6D),
-                            foregroundColor: Colors.white,
-                            minimumSize: const Size(double.infinity, 48),
-                            shape: const StadiumBorder(),
-                          ),
-                          onPressed: () {},
-                          child: const Text("Save Update"),
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             );
-          }
-        },
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextFormField({
+    required String initialValue,
+    required String hintText,
+  }) {
+    return TextFormField(
+      initialValue: initialValue,
+      decoration: InputDecoration(
+        hintText: hintText,
+        filled: true,
+        fillColor: Colors.grey[200],
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: BorderSide.none,
+        ),
       ),
     );
   }
@@ -251,47 +241,34 @@ class ProfilePic extends StatelessWidget {
   const ProfilePic({
     super.key,
     required this.image,
-    this.isShowPhotoUpload = false,
     this.imageUploadBtnPress,
   });
 
   final String image;
-  final bool isShowPhotoUpload;
   final VoidCallback? imageUploadBtnPress;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      margin: const EdgeInsets.symmetric(vertical: 16.0),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color:
-              Theme.of(context).textTheme.bodyLarge!.color!.withOpacity(0.08),
+    return Stack(
+      alignment: Alignment.bottomRight,
+      children: [
+        CircleAvatar(
+          radius: 60,
+          backgroundImage: NetworkImage(image),
         ),
-      ),
-      child: Stack(
-        alignment: Alignment.bottomRight,
-        children: [
-          CircleAvatar(
-            radius: 50,
-            backgroundImage: NetworkImage(image),
-          ),
-          InkWell(
-            onTap: imageUploadBtnPress,
-            child: CircleAvatar(
-              radius: 13,
-              backgroundColor: Theme.of(context).primaryColor,
-              child: const Icon(
-                Icons.add,
-                color: Colors.white,
-                size: 20,
-              ),
+        InkWell(
+          onTap: imageUploadBtnPress,
+          child: const CircleAvatar(
+            radius: 18,
+            backgroundColor: Colors.blue,
+            child: Icon(
+              Icons.camera_alt,
+              color: Colors.white,
+              size: 20,
             ),
-          )
-        ],
-      ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -308,20 +285,19 @@ class UserInfoEditField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0 / 2),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 2,
-            child: Text(text),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          text,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
           ),
-          Expanded(
-            flex: 3,
-            child: child,
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 5),
+        child,
+      ],
     );
   }
 }

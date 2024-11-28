@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:schedula/announsmentScreen/announcement_screen.dart';
+import 'package:schedula/assignments/assignment_screen.dart';
 import 'package:schedula/chatAI/chat_screen.dart';
 import 'package:schedula/noteScreen/note_screen.dart';
 import 'package:schedula/profile/profile_screen.dart';
@@ -20,7 +21,7 @@ class _StartScreenState extends State<StartScreen> {
   final List<Widget> _pages = [
     const ClassScren(),
     const NoteScreen(),
-    const Announcementscreen(),
+    const AssignmentsPage(),
     const ChatScreen(),
     const ProfileScreen(),
   ];
@@ -34,7 +35,6 @@ class _StartScreenState extends State<StartScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     requesPermission();
   }

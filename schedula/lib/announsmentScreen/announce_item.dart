@@ -58,7 +58,11 @@ class AnnounceItem extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  IconButton(onPressed: () {}, icon: const Icon(Icons.delete))
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.delete),
+                    color: Colors.redAccent,
+                  )
                 ],
               ),
               Padding(
@@ -80,7 +84,10 @@ class AnnounceItem extends StatelessWidget {
                     const Spacer(),
                     IconButton(
                       onPressed: () {},
-                      icon: const Icon(Icons.download),
+                      icon: const Icon(
+                        Icons.download,
+                        color: Colors.purple,
+                      ),
                     ),
                   ],
                 ),

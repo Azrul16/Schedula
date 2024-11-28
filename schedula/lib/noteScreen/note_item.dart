@@ -177,17 +177,22 @@ class _NotesItemState extends State<NotesItem> {
                 onPressed: () {
                   showDeleteDialog(context);
                 },
-                icon: const Icon(Icons.delete),
+                icon: const Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                ),
               ),
               const SizedBox(
                 height: 10,
               ),
               IconButton(
-                  onPressed: () {
-                    String downloadURL = widget.notesItem.downloadURL;
-                    downloadFile(downloadURL);
-                  },
-                  icon: const Icon(Icons.download)),
+                onPressed: () {
+                  String downloadURL = widget.notesItem.downloadURL;
+                  downloadFile(downloadURL);
+                },
+                icon: const Icon(Icons.download),
+                color: Colors.green,
+              ),
             ],
           ),
         ],

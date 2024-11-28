@@ -11,28 +11,19 @@ class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   Future<Map<String, dynamic>?> getUserData() async {
-    // Get the currently logged-in user
     User? currentUser = FirebaseAuth.instance.currentUser;
-
-    if (currentUser == null) {
-      // User is not logged in
-      return null;
-    }
+    if (currentUser == null) return null;
 
     String currentEmail = currentUser.email!;
-
-    // Query the Firestore users collection
     QuerySnapshot querySnapshot =
         await FirebaseFirestore.instance.collection('users').get();
 
     for (var doc in querySnapshot.docs) {
       if (doc['email'] == currentEmail) {
-        return doc.data()
-            as Map<String, dynamic>; // Return all fields of the matching user
+        return doc.data() as Map<String, dynamic>;
       }
     }
-
-    return null; // No matching user found
+    return null;
   }
 
   void showLogoutDialog(BuildContext context) {
@@ -46,7 +37,7 @@ class ProfileScreen extends StatelessWidget {
             TextButton(
               child: const Text('Cancel'),
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
             ),
             TextButton(
@@ -64,113 +55,138 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        backgroundColor: Colors.blue,
-      ),
-      body: FutureBuilder<Map<String, dynamic>?>(
-        future: getUserData(),
-        builder: (BuildContext context,
-            AsyncSnapshot<Map<String, dynamic>?> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else {
-            Map<String, dynamic> userData = snapshot.data!;
-            final user = UserModel.fromJson(userData);
-            return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Profile image and name
-                    const CircleAvatar(
-                      radius: 50.0,
-                      backgroundImage: NetworkImage(
-                        "https://st3.depositphotos.com/32927174/36182/v/450/depositphotos_361823194-stock-illustration-glowing-neon-line-create-account.jpg",
-                      ), // Replace with your image path
-                    ),
-                    const SizedBox(height: 16.0),
-                    Text(
-                      '${user.fname} ${user.lname}',
-                      style: const TextStyle(
-                          fontSize: 24.0, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                        '@${user.fname.toLowerCase()}_${user.lname.toLowerCase()}'),
-                    const SizedBox(height: 16.0),
-                    const SizedBox(height: 32.0),
-                    ProfileMenu(
-                      text: "Profile Details",
-                      icon: Icons.person_2_rounded,
-                      press: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const ProfileDetails(),
-                          ),
-                        );
-                      },
-                    ),
-                    ProfileMenu(
-                      text: "Classmates",
-                      icon: Icons.group_rounded,
-                      press: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const ClassmateScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    ProfileMenu(
-                      text: "Total classes",
-                      icon: Icons.class_rounded,
-                      press: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (ctx) => const TotalClass(),
-                          ),
-                        );
-                      },
-                    ),
+      body: Stack(
+        children: [
+          // Gradient background
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF4CAF50), Color(0xFF2196F3)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+          FutureBuilder<Map<String, dynamic>?>(
+            future: getUserData(),
+            builder: (BuildContext context,
+                AsyncSnapshot<Map<String, dynamic>?> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 50, vertical: 10),
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                          foregroundColor: const Color(0xFFFF7643),
-                          padding: const EdgeInsets.all(20),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30)),
-                          backgroundColor: Colors.red[400],
+              if (!snapshot.hasData || snapshot.data == null) {
+                return const Center(child: Text('User data not found.'));
+              }
+
+              Map<String, dynamic> userData = snapshot.data!;
+              final user = UserModel.fromJson(userData);
+
+              return SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 60),
+                      // Profile Picture
+                      Center(
+                        child: CircleAvatar(
+                          radius: 70,
+                          backgroundColor: Colors.white,
+                          child: CircleAvatar(
+                            radius: 65,
+                            backgroundImage: const NetworkImage(
+                              "https://st3.depositphotos.com/32927174/36182/v/450/depositphotos_361823194-stock-illustration-glowing-neon-line-create-account.jpg",
+                            ),
+                          ),
                         ),
+                      ),
+                      const SizedBox(height: 20),
+                      // User Information
+                      Text(
+                        '${user.fname} ${user.lname}',
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        '@${user.fname.toLowerCase()}_${user.lname.toLowerCase()}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white70,
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      // Menu Items
+                      ProfileMenu(
+                        text: "Profile Details",
+                        icon: Icons.person_2_rounded,
+                        press: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const ProfileDetails(),
+                            ),
+                          );
+                        },
+                      ),
+                      ProfileMenu(
+                        text: "Classmates",
+                        icon: Icons.group_rounded,
+                        press: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const ClassmateScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      ProfileMenu(
+                        text: "Total Classes",
+                        icon: Icons.class_rounded,
+                        press: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (ctx) => const TotalClass(),
+                            ),
+                          );
+                        },
+                      ),
+                      // Logout Button
+                      const SizedBox(height: 20),
+                      ElevatedButton.icon(
                         onPressed: () {
                           showLogoutDialog(context);
                         },
-                        child: const Row(
-                          children: [
-                            Icon(Icons.logout),
-                            SizedBox(width: 5),
-                            Expanded(
-                              child: Text(
-                                "Logout",
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 0, 0, 0),
-                                  fontSize: 20,
-                                ),
-                              ),
-                            ),
-                          ],
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red[400],
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 15,
+                            horizontal: 40,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        icon: const Icon(Icons.logout, color: Colors.white),
+                        label: const Text(
+                          'Logout',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 30),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          }
-        },
+              );
+            },
+          ),
+        ],
       ),
     );
   }

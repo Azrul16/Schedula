@@ -16,13 +16,15 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final auth = FirebaseAuth.instance;
+  bool _isPasswordVisible = false; // Password visibility state
+
   void _startScreen() async {
     try {
       showLoadingDialoge(context);
       await auth.signInWithEmailAndPassword(
-          //UserCredential userCredential =
-          email: email.text,
-          password: password.text);
+        email: email.text,
+        password: password.text,
+      );
       // ignore: use_build_context_synchronously
       Navigator.of(context).pop();
     } catch (e) {
@@ -48,32 +50,18 @@ class _LoginState extends State<Login> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.amber,
-        // appBar: AppBar(
-        //   actions: const [
-        //     Text(
-        //       'Schedula',
-        //     ),
-        //   ],
-        //   backgroundColor: Colors.orange,
-        // ),
         body: SafeArea(
           child: ListView(
             children: [
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.all(30),
                 child: SizedBox(
                   width: 10,
-                  child: Image.asset(
-                    'assets/images/appstore.png',
-                  ),
+                  child: Image.asset('assets/images/appstore.png'),
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 50),
                 child: TextField(
@@ -90,60 +78,38 @@ class _LoginState extends State<Login> {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 50),
                 child: TextField(
                   controller: password,
-                  obscureText: true,
+                  obscureText: !_isPasswordVisible,
                   keyboardType: TextInputType.visiblePassword,
-                  decoration: const InputDecoration(
-                    label: Text('Paassword'),
-                    enabledBorder: OutlineInputBorder(
+                  decoration: InputDecoration(
+                    label: const Text('Password'),
+                    enabledBorder: const OutlineInputBorder(
                       borderSide: BorderSide(
                         color: Colors.black,
                         width: 2,
                       ),
                     ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Colors.black,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    ),
                   ),
                 ),
               ),
-              // Center(
-              //   child: Padding(
-              //     padding: const EdgeInsets.symmetric(horizontal: 50),
-              //     child: Text(
-              //       'or',
-              //       style: GoogleFonts.getFont(
-              //         'Lumanosimo',
-              //         textStyle: const TextStyle(fontSize: 18),
-              //       ),
-              //     ),
-              //   ),
-              // ),
-              // const Padding(
-              //   padding: EdgeInsets.symmetric(horizontal: 50),
-              //   child: TextField(
-              //     maxLength: 5,
-              //     keyboardType: TextInputType.number,
-              //     decoration: InputDecoration(
-              //       label: Text('Class Code'),
-              //       enabledBorder: OutlineInputBorder(
-              //         borderSide: BorderSide(
-              //           color: Colors.black,
-              //           width: 2,
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
-              // const SizedBox(
-              //   height: 10,
-              // ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 150),
                 child: ElevatedButton(
@@ -162,9 +128,7 @@ class _LoginState extends State<Login> {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               const Text(
                 'OR',
                 textAlign: TextAlign.center,
@@ -183,7 +147,6 @@ class _LoginState extends State<Login> {
                   ),
                 ),
               ),
-
               Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -210,9 +173,7 @@ class _LoginState extends State<Login> {
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 30,
-              ),
+              const SizedBox(height: 30),
             ],
           ),
         ),
