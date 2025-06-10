@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:schedula/utils/auth_gate.dart';
+import 'package:schedula/utils/toast_message.dart';
 
 class AssignmentCard extends StatefulWidget {
+  final String id;
   final String assignmentName;
   final String courseTitle;
   final String teacherName;
   final String lastDate;
+  final List<String> completedBy;
 
   const AssignmentCard({
     super.key,
+    required this.id,
     required this.assignmentName,
     required this.courseTitle,
     required this.teacherName,
     required this.lastDate,
+    required this.completedBy,
   });
 
   @override
@@ -19,132 +27,172 @@ class AssignmentCard extends StatefulWidget {
 }
 
 class _AssignmentCardState extends State<AssignmentCard> {
-  bool isCompleted = false; // Track the status of the assignment
+  late bool isCompleted;
+  String? currentUserId;
+  bool _isLoading = false;
 
-  void _openBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Mark Assignment Status",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ListTile(
-                    title: const Text("Completed"),
-                    leading: Radio<bool>(
-                      value: true,
-                      groupValue: isCompleted,
-                      onChanged: (value) {
-                        setModalState(() {
-                          isCompleted = value!;
-                        });
-                      },
-                    ),
-                  ),
-                  ListTile(
-                    title: const Text("Not Completed"),
-                    leading: Radio<bool>(
-                      value: false,
-                      groupValue: isCompleted,
-                      onChanged: (value) {
-                        setModalState(() {
-                          isCompleted = value!;
-                        });
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Update the state of the main card when modal is closed
-                      setState(() {});
-                      Navigator.pop(context);
-                    },
-                    child: const Text("Save"),
-                  ),
-                ],
-              ),
-            );
-          },
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentUser();
+  }
+
+  Future<void> _loadCurrentUser() async {
+    final userId = await GlobalUtils.getCurrentUserId();
+    if (mounted) {
+      setState(() {
+        currentUserId = userId;
+        isCompleted = widget.completedBy.contains(userId);
+      });
+    }
+  }
+
+  Future<void> _toggleCompletion() async {
+    if (currentUserId == null || _isLoading) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final assignmentRef = FirebaseFirestore.instance
+          .collection('assignments')
+          .doc(widget.id);
+
+      List<String> updatedCompletedBy = List.from(widget.completedBy);
+      if (isCompleted) {
+        updatedCompletedBy.remove(currentUserId);
+      } else {
+        updatedCompletedBy.add(currentUserId!);
+      }
+
+      await assignmentRef.update({'completedBy': updatedCompletedBy});
+
+      if (mounted) {
+        setState(() {
+          isCompleted = !isCompleted;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isCompleted ? 'Marked as completed' : 'Marked as incomplete',
+              style: GoogleFonts.lato(),
+            ),
+            backgroundColor: isCompleted ? Colors.green : Colors.orange,
+            duration: const Duration(seconds: 2),
+          ),
         );
-      },
-    );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Failed to update assignment status: $e',
+              style: GoogleFonts.lato(),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => _openBottomSheet(context), // Open the modal bottom sheet
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: isCompleted
-                ? Colors.green
-                : Colors.red, // Green if completed, red otherwise
-            borderRadius: BorderRadius.circular(15),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.shade400,
-                blurRadius: 8,
-                offset: const Offset(4, 4),
-              ),
-            ],
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isCompleted
+                ? [Colors.green.shade100, Colors.green.shade200]
+                : [Colors.orange.shade100, Colors.orange.shade200],
           ),
+        ),
+        child: InkWell(
+          onTap: _toggleCompletion,
+          borderRadius: BorderRadius.circular(12),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  widget.assignmentName,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        widget.assignmentName,
+                        style: GoogleFonts.lato(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                    if (_isLoading)
+                      const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(),
+                      )
+                    else
+                      Icon(
+                        isCompleted ? Icons.check_circle : Icons.circle_outlined,
+                        color: isCompleted ? Colors.green.shade700 : Colors.orange.shade700,
+                        size: 24,
+                      ),
+                  ],
                 ),
                 const SizedBox(height: 8),
                 Text(
                   "Course: ${widget.courseTitle}",
-                  style: const TextStyle(
+                  style: GoogleFonts.lato(
                     fontSize: 14,
-                    color: Colors.white70,
+                    color: Colors.black54,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   "Teacher: ${widget.teacherName}",
-                  style: const TextStyle(
+                  style: GoogleFonts.lato(
                     fontSize: 14,
-                    color: Colors.white70,
+                    color: Colors.black54,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       "Due: ${widget.lastDate}",
-                      style: const TextStyle(
+                      style: GoogleFonts.lato(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    Text(
+                      isCompleted ? "Completed" : "Pending",
+                      style: GoogleFonts.lato(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: isCompleted ? Colors.green.shade700 : Colors.orange.shade700,
                       ),
                     ),
                   ],

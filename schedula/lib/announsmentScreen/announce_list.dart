@@ -1,16 +1,40 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:schedula/announsmentScreen/announce_item.dart';
 import 'package:schedula/announsmentScreen/announce_model.dart';
+import 'package:schedula/announsmentScreen/announcement_service.dart';
+import 'package:schedula/utils/permission_handler.dart';
 
-class AnnounceList extends StatelessWidget {
-  const AnnounceList({super.key, required selectedAnnounce});
+class AnnounceList extends StatefulWidget {
+  const AnnounceList({super.key});
+
+  @override
+  State<AnnounceList> createState() => _AnnounceListState();
+}
+
+class _AnnounceListState extends State<AnnounceList> {
+  bool _isCaptain = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkPermissions();
+  }
+
+  Future<void> _checkPermissions() async {
+    final isCaptain = await PermissionHandler.isCurrentUserCaptain();
+    if (mounted) {
+      setState(() {
+        _isCaptain = isCaptain;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream:
-          FirebaseFirestore.instance.collection('announcements').snapshots(),
+    return StreamBuilder<List<Announcements>>(
+      stream: _isCaptain 
+          ? AnnouncementService.getAllAnnouncements()
+          : AnnouncementService.getAnnouncementsForCurrentSemester(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -18,22 +42,29 @@ class AnnounceList extends StatelessWidget {
           );
         }
 
-        final allAnnouncement = snapshot.data?.docs;
-        List<Announcements> newAnnouncement = [];
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
+          );
+        }
 
-        for (var e in allAnnouncement!) {
-          newAnnouncement.add(Announcements.fromJSON(e.data(), e.id));
+        final announcements = snapshot.data ?? [];
+        
+        if (announcements.isEmpty) {
+          return const Center(
+            child: Text('No announcements available'),
+          );
         }
         return ListView.builder(
-          itemCount: allAnnouncement.length,
+          itemCount: announcements.length,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (ctx, index) {
             return AnnounceItem(
-              newAnnouncement[index],
+              announcements[index],
               isStart: index == 0,
-              isEnd: index == allAnnouncement.length - 1,
-              task: allAnnouncement.length,
+              isEnd: index == announcements.length - 1,
+              task: announcements.length,
             );
           },
         );

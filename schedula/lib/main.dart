@@ -1,77 +1,112 @@
+import 'dart:io' show Platform;
+
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart'; // for kIsWeb
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:schedula/chatAI/chat_controller.dart';
 import 'package:schedula/firebase_options.dart';
 import 'package:schedula/utils/auth_gate.dart';
+import 'package:schedula/utils/permission_handler.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // Handle background message
   print("Handling a background message: ${message.messageId}");
+}
+
+Future<void> initializeFirebaseMessaging() async {
+  // Only setup Firebase Messaging if supported
+  if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permission');
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      print('User granted provisional permission');
+    } else {
+      print('User declined or has not accepted permission');
+    }
+
+    await messaging.subscribeToTopic('general');
+    print('Subscribed to general topic');
+
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+    String? token = await messaging.getToken();
+    print('FCM Token: $token');
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Received a message while in the foreground!');
+      print('Message data: ${message.data}');
+      if (message.notification != null) {
+        print('Message also contained a notification: ${message.notification}');
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print('Message clicked!');
+    });
+  } else {
+    print(
+        "Firebase Messaging is not supported on this platform. Skipping setup.");
+  }
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
+  print("Initializing Firebase...");
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  print("Firebase initialized.");
 
-  // Initialize Firebase Messaging
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  await initializeFirebaseMessaging(); // Safe call
 
-  // Request permission for iOS (only needed for iOS)
-  NotificationSettings settings = await messaging.requestPermission(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
-
-  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-    print('User granted permission');
-  } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
-    print('User granted provisional permission');
-  } else {
-    print('User declined or has not accepted permission');
-  }
-
-  // Subscribe to a 'general' topic
-  await messaging.subscribeToTopic('general');
-  print('Subscribed to general topic');
-
-  // Handle background messages
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-  // Load environment variables
   await dotenv.load(fileName: ".env");
 
-  // Initialize your custom controllers
   InitializeController().init();
 
+  // Create a GlobalKey for navigator to use in permission dialogs
+  final navigatorKey = GlobalKey<NavigatorState>();
+
   runApp(
-    const MaterialApp(
-      home: AuthGate(),
+    MaterialApp(
+      navigatorKey: navigatorKey,
+      debugShowCheckedModeBanner: false,
+      home: Builder(
+        builder: (context) => FutureBuilder<Map<Permission, bool>>(
+          future: PermissionHandler.requestAppPermissions(context),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+            
+            if (snapshot.hasError) {
+              print('Error requesting permissions: ${snapshot.error}');
+            } else if (snapshot.hasData) {
+              // Log permission statuses
+              snapshot.data!.forEach((permission, isGranted) {
+                print('Permission ${permission.toString()}: ${isGranted ? 'Granted' : 'Denied'}');
+              });
+            }
+            
+            return const AuthGate();
+          },
+        ),
+      ),
     ),
   );
-
-  // Get the device token for FCM
-  String? token = await messaging.getToken();
-  print('FCM Token: $token');
-
-  // Handle foreground messages
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print('Received a message while in the foreground!');
-    print('Message data: ${message.data}');
-
-    if (message.notification != null) {
-      print('Message also contained a notification: ${message.notification}');
-    }
-  });
-
-  // Handle when the app is opened from a terminated state via a notification
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    print('Message clicked!');
-  });
 }

@@ -86,7 +86,11 @@ class _UpdateClassState extends State<UpdateClass> {
         courseCode: _courseController.text,
         courseTecher: _teacherController.text,
         courseTitle: _titleController.text,
-        time: classTime);
+        time: classTime,
+        semester: widget.classitem.semester, // Preserve existing semester
+        creatorId: widget.classitem.creatorId, // Preserve existing creator
+        creatorIsCaptain: widget.classitem.creatorIsCaptain // Preserve captain status
+    );
 
     await FirebaseFirestore.instance
         .collection('classes')

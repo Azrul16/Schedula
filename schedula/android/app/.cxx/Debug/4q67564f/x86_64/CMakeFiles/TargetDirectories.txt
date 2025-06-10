@@ -1,0 +1,2 @@
+D:/Github/Schedula/schedula/android/app/.cxx/Debug/4q67564f/x86_64/CMakeFiles/edit_cache.dir
+D:/Github/Schedula/schedula/android/app/.cxx/Debug/4q67564f/x86_64/CMakeFiles/rebuild_cache.dir

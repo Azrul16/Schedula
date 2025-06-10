@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:schedula/adminScreen/admin_dashboard.dart';
 import 'package:schedula/userAccounts/createUser.dart';
 import 'package:schedula/utils/all_dialouge.dart';
 import 'package:schedula/utils/toast_message.dart';
@@ -20,6 +21,21 @@ class _LoginState extends State<Login> {
 
   void _startScreen() async {
     try {
+      // Check for admin credentials
+      if (email.text.trim() == 'admin@gmail.com' && password.text == '@admin123') {
+        showLoadingDialoge(context);
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).pop(); // Pop the loading dialog
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (ctx) => const AdminDashboard(),
+          ),
+        );
+        return;
+      }
+
+      // Regular user authentication
       showLoadingDialoge(context);
       await auth.signInWithEmailAndPassword(
         email: email.text,

@@ -1,0 +1,2 @@
+D:/Github/Schedula/schedula/android/app/.cxx/RelWithDebInfo/4n36196z/arm64-v8a/CMakeFiles/edit_cache.dir
+D:/Github/Schedula/schedula/android/app/.cxx/RelWithDebInfo/4n36196z/arm64-v8a/CMakeFiles/rebuild_cache.dir

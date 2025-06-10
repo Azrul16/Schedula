@@ -37,12 +37,12 @@ dependencies:
   cupertino_icons: ^1.0.6
   google_fonts: ^6.2.1
   uuid: ^4.4.0
-  intl: ^0.19.0
+  intl: ^0.20.2
   water_drop_nav_bar: ^2.2.1
   firebase_core: ^3.2.0
-  flutter_blurhash: ^0.8.2
+  flutter_blurhash: ^0.9.1
   cloud_firestore: ^5.0.2
-  file_picker: ^8.0.6
+  file_picker: ^10.1.9
   http: ^1.2.2
   provider: ^6.1.2
   google_generative_ai: ^0.4.3
@@ -51,20 +51,20 @@ dependencies:
   fluttertoast: ^8.2.6
   quickalert: ^1.1.0
   flutter_native_splash: ^2.4.1
-  chatview: ^2.0.0
+
   get: ^4.6.6
   firebase_storage: ^12.1.1
   paper_card: ^0.1.4
-  flutter_phone_direct_caller: ^2.1.1
   firebase_messaging: ^15.0.3
-  flutter_local_notifications: ^17.2.1+2
-  app_settings: ^5.1.1
+  flutter_local_notifications: ^19.2.0
+  app_settings: ^6.1.1
   path_provider: ^2.1.4
-  permission_handler: ^11.3.1
+  permission_handler: ^12.0.0+1
   dio: ^5.5.0+1
   cached_network_image: ^3.4.0
   flutter_cached_pdfview: ^0.4.2
   timeline_tile: ^2.0.0
+  shared_preferences: ^2.1.1
   
 
 dev_dependencies:
@@ -76,7 +76,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

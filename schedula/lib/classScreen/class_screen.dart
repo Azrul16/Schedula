@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:schedula/classScreen/class_models.dart';
 import 'package:schedula/classScreen/class_list.dart';
 import 'package:schedula/classScreen/new_class.dart';
+import 'package:schedula/utils/auth_gate.dart';
 
 class ClassScren extends StatefulWidget {
   const ClassScren({super.key});
@@ -14,15 +17,36 @@ class ClassScren extends StatefulWidget {
 class _ClassScrenState extends State<ClassScren> {
   final List<ClassSchedule> _selectedSchedule = [];
 
-  void _openAddClassOverlay() {
-    showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (ctx) {
-          return NewClass(
-            onAddClass: _addClass,
-          );
-        });
+  void _openAddClassOverlay() async {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .get();
+
+      if (userDoc.exists && userDoc.data() != null) {
+        var userData = userDoc.data() as Map<String, dynamic>;
+        if (!mounted) return;
+
+        showModalBottomSheet(
+          useSafeArea: true,
+          isScrollControlled: true,
+          context: context,
+          builder: (ctx) => Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(ctx).viewInsets.bottom,
+            ),
+            child: NewClass(
+              onAddClass: _addClass,
+              currentUserId: currentUser.uid,
+              semester: userData['semister'] ?? '',
+              isCaptain: userData['isCaptain'] ?? false,
+            ),
+          ),
+        );
+      }
+    }
   }
 
   void _addClass(ClassSchedule classSchedule) {
@@ -43,18 +67,12 @@ class _ClassScrenState extends State<ClassScren> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.amber,
-        title: GestureDetector(
-          onTap: () {
-            //FirebaseAuth.instance.signOut();
-          },
-          child: Text(
-            'Classes',
-            style: GoogleFonts.getFont(
-              'Lumanosimo',
-              textStyle: const TextStyle(
-                fontSize: 18,
-              ),
-            ),
+        title: Text(
+          'Classes',
+          style: GoogleFonts.lato(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
       ),
@@ -66,12 +84,15 @@ class _ClassScrenState extends State<ClassScren> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text(
-                'Today',
-                style: GoogleFonts.getFont(
-                  'Caprasimo',
-                  fontSize: 26,
-                  color: Colors.green,
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Text(
+                  'Today',
+                  style: GoogleFonts.lato(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.amber[900],
+                  ),
                 ),
               ),
               Row(
@@ -85,21 +106,21 @@ class _ClassScrenState extends State<ClassScren> {
                       children: [
                         Text(
                           weekdays[index],
-                          style: TextStyle(
+                          style: GoogleFonts.lato(
                             fontWeight:
                                 isToday ? FontWeight.bold : FontWeight.normal,
-                            color: isToday ? Colors.green : Colors.grey,
-                            fontSize: 20,
+                            color: isToday ? Colors.amber[900] : Colors.grey,
+                            fontSize: 16,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           weekDates[index].day.toString(),
-                          style: TextStyle(
+                          style: GoogleFonts.lato(
                             fontWeight:
                                 isToday ? FontWeight.bold : FontWeight.normal,
-                            color: isToday ? Colors.green : Colors.black,
-                            fontSize: 20,
+                            color: isToday ? Colors.amber[900] : Colors.black,
+                            fontSize: 18,
                           ),
                         ),
                         if (isToday)
@@ -107,28 +128,56 @@ class _ClassScrenState extends State<ClassScren> {
                             margin: const EdgeInsets.only(top: 2),
                             height: 2,
                             width: 20,
-                            color: Colors.green,
+                            color: Colors.amber[900],
                           ),
                       ],
                     );
                   },
                 ),
               ),
-              const SizedBox(
-                height: 20,
+              const SizedBox(height: 20),
+              FutureBuilder<DocumentSnapshot>(
+                future: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                    .get(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (!snapshot.hasData || !snapshot.data!.exists) {
+                    return const Center(child: Text('User data not found'));
+                  }
+                  var userData = snapshot.data!.data() as Map<String, dynamic>;
+                  return ClassList(
+                    selectedSchedule: _selectedSchedule,
+                    userSemester: userData['semister'] ?? '',
+                  );
+                },
               ),
-              ClassList(selectedSchedule: _selectedSchedule),
-              const SizedBox(
-                height: 20,
-              )
+              const SizedBox(height: 20),
             ],
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _openAddClassOverlay,
-        backgroundColor: Colors.yellow,
-        child: const Icon(Icons.add),
+      floatingActionButton: FutureBuilder<bool>(
+        future: GlobalUtils.isCaptain(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const SizedBox.shrink();
+          }
+          if (snapshot.hasData && snapshot.data == true) {
+            return FloatingActionButton(
+              onPressed: _openAddClassOverlay,
+              backgroundColor: Colors.amber,
+              child: const Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
+            );
+          }
+          return const SizedBox.shrink();
+        },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );

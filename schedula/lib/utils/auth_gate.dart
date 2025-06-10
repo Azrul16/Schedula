@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:schedula/userAccounts/login_page.dart';
-
 import 'package:schedula/classScreen/start_screen.dart';
 
 class AuthGate extends StatelessWidget {
@@ -58,6 +57,58 @@ Future<String?> checkUserAuthAndGetSemester() async {
 }
 
 class GlobalUtils {
+  static Future<String?> getCurrentUserId() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      return user?.uid;
+    } catch (e) {
+      print("Error getting user ID: $e");
+      return null;
+    }
+  }
+
+  static Future<String?> getCurrentUserSemester() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (userDoc.exists && userDoc.data() != null) {
+          var userData = userDoc.data() as Map<String, dynamic>;
+          return userData['semister'];
+        }
+      }
+      return null;
+    } catch (e) {
+      print("Error getting semester: $e");
+      return null;
+    }
+  }
+
+  static Future<bool> isCaptain() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (userDoc.exists && userDoc.data() != null) {
+          var userData = userDoc.data() as Map<String, dynamic>;
+          return userData['isCaptain'] ?? false;
+        }
+      }
+      return false;
+    } catch (e) {
+      print("Error checking captain status: $e");
+      return false;
+    }
+  }
+
   static Future<bool> isAdmin() async {
     try {
       User? user = FirebaseAuth.instance.currentUser;

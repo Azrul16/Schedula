@@ -11,17 +11,20 @@ class UserModel {
   final String email;
   final Semester semister;
   final String phoneNumber;
+  final bool isCaptain;  // New field for captain role
 
-  UserModel(
-      {required this.lname,
-      required this.dept,
-      required this.id,
-      required this.reg,
-      required this.varsity,
-      required this.fname,
-      required this.semister,
-      required this.email,
-      required this.phoneNumber});
+  UserModel({
+    required this.lname,
+    required this.dept,
+    required this.id,
+    required this.reg,
+    required this.varsity,
+    required this.fname,
+    required this.semister,
+    required this.email,
+    required this.phoneNumber,
+    this.isCaptain = false,  // Default value is false
+  });
 
   // Convert a JSON object to an UserModel instance
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -35,8 +38,9 @@ class UserModel {
       semister: Semester.values.firstWhere(
         (e) => e.name == json['semister'],
       ),
-      id: 'ID',
-      reg: 'Registration',
+      id: json['ID'] ?? '',
+      reg: json['Registration'] ?? '',
+      isCaptain: json['isCaptain'] ?? false,  // Read from JSON with default false
     );
   }
 
@@ -52,6 +56,7 @@ class UserModel {
       'email': email,
       'semister': semister.name,
       'phoneNumber': phoneNumber,
+      'isCaptain': isCaptain,  // Include in JSON
     };
   }
 }
