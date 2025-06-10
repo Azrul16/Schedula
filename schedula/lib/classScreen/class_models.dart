@@ -10,6 +10,9 @@ class ClassSchedule {
     required this.time,
     required this.courseCode,
     required this.docID,
+    required this.semester,
+    required this.creatorId,
+    required this.creatorIsCaptain,
   });
 
   final String courseTitle;
@@ -17,6 +20,9 @@ class ClassSchedule {
   final String courseTecher;
   final DateTime time;
   final String docID;
+  final String semester;      // Store semester for filtering
+  final String creatorId;     // Store creator's ID
+  final bool creatorIsCaptain; // Store if creator is captain
 
   factory ClassSchedule.fromJSON(Map<String, dynamic> json, String id) {
     return ClassSchedule(
@@ -25,6 +31,9 @@ class ClassSchedule {
       courseTecher: json['course_teacher'],
       time: (json['time'] as Timestamp).toDate(),
       courseCode: json['course_code'],
+      semester: json['semester'] ?? '',
+      creatorId: json['creator_id'] ?? '',
+      creatorIsCaptain: json['creator_is_captain'] ?? false,
     );
   }
 
@@ -34,6 +43,9 @@ class ClassSchedule {
       'course_teacher': courseTecher,
       'time': time,
       'course_code': courseCode,
+      'semester': semester,
+      'creator_id': creatorId,
+      'creator_is_captain': creatorIsCaptain,
     };
   }
 }

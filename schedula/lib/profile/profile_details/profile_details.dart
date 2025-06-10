@@ -29,15 +29,42 @@ class ProfileDetails extends StatelessWidget {
   }
 }
 
-class EditProfileScreen extends StatelessWidget {
+class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
+
+  @override
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final Map<String, TextEditingController> _controllers = {
+    'name': TextEditingController(),
+    'id': TextEditingController(),
+    'reg': TextEditingController(),
+    'email': TextEditingController(),
+    'phone': TextEditingController(),
+    'dept': TextEditingController(),
+  };
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  @override
+  void dispose() {
+    for (var controller in _controllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
 
   Future<Map<String, dynamic>?> getUserData() async {
     User? currentUser = FirebaseAuth.instance.currentUser;
-
-    if (currentUser == null) {
-      return null;
-    }
+    if (currentUser == null) return null;
 
     String currentEmail = currentUser.email!;
     QuerySnapshot querySnapshot =
@@ -48,8 +75,109 @@ class EditProfileScreen extends StatelessWidget {
         return doc.data() as Map<String, dynamic>;
       }
     }
-
     return null;
+  }
+
+  Future<void> _loadUserData() async {
+    final userData = await getUserData();
+    if (userData != null && mounted) {
+      final user = UserModel.fromJson(userData);
+      setState(() {
+        _controllers['name']!.text = '${user.fname} ${user.lname}';
+        _controllers['id']!.text = user.id;
+        _controllers['reg']!.text = user.reg;
+        _controllers['email']!.text = user.email;
+        _controllers['phone']!.text = user.phoneNumber;
+        _controllers['dept']!.text = user.dept;
+      });
+    }
+  }
+
+  Future<void> _saveProfile() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .where('email', isEqualTo: user.email)
+            .get();
+
+        if (userDoc.docs.isNotEmpty) {
+          final nameParts = _controllers['name']!.text.split(' ');
+          final firstName = nameParts[0];
+          final lastName =
+              nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+
+          await userDoc.docs.first.reference.update({
+            'fname': firstName,
+            'lname': lastName,
+            'id': _controllers['id']!.text,
+            'reg': _controllers['reg']!.text,
+            'phoneNumber': _controllers['phone']!.text,
+            'dept': _controllers['dept']!.text,
+          });
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Profile updated successfully!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            Navigator.pop(context);
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error updating profile: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Widget _buildTextFormField({
+    required TextEditingController controller,
+    required String hintText,
+    String? Function(String?)? validator,
+    bool enabled = true,
+  }) {
+    return TextFormField(
+      controller: controller,
+      enabled: enabled,
+      validator: validator ??
+          (value) {
+            if (value == null || value.isEmpty) {
+              return 'This field is required';
+            }
+            return null;
+          },
+      decoration: InputDecoration(
+        hintText: hintText,
+        filled: true,
+        fillColor: Colors.grey[200],
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
   }
 
   @override
@@ -73,164 +201,159 @@ class EditProfileScreen extends StatelessWidget {
             ],
           ),
         ),
-        child: FutureBuilder<Map<String, dynamic>?>(
-          future: getUserData(),
-          builder: (BuildContext context,
-              AsyncSnapshot<Map<String, dynamic>?> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (!snapshot.hasData || snapshot.data == null) {
-              return const Center(child: Text("Failed to load user data"));
-            }
-
-            Map<String, dynamic> userData = snapshot.data!;
-            final user = UserModel.fromJson(userData);
-
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                children: [
-                  const SizedBox(height: 10),
-                  ProfilePic(
-                    image:
-                        'https://st3.depositphotos.com/32927174/36182/v/450/depositphotos_361823194-stock-illustration-glowing-neon-line-create-account.jpg',
-                    imageUploadBtnPress: () {
-                      // Logic for uploading image
-                    },
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          spreadRadius: 5,
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        UserInfoEditField(
-                          text: "Name",
-                          child: _buildTextFormField(
-                            initialValue: '${user.fname} ${user.lname}',
-                            hintText: "Enter your full name",
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        UserInfoEditField(
-                          text: "ID",
-                          child: _buildTextFormField(
-                            initialValue: user.id,
-                            hintText: "Enter your ID",
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        UserInfoEditField(
-                          text: "Registration",
-                          child: _buildTextFormField(
-                            initialValue: user.reg,
-                            hintText: "Enter your registration number",
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        UserInfoEditField(
-                          text: "Email",
-                          child: _buildTextFormField(
-                            initialValue: user.email,
-                            hintText: "Enter your email",
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        UserInfoEditField(
-                          text: "Phone",
-                          child: _buildTextFormField(
-                            initialValue: user.phoneNumber,
-                            hintText: "Enter your phone number",
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        UserInfoEditField(
-                          text: "Department",
-                          child: _buildTextFormField(
-                            initialValue: user.dept,
-                            hintText: "Enter your department",
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 15, horizontal: 30),
-                              ),
-                              child: const Text(
-                                "Cancel",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                // Save Update logic
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF2196F3),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 15, horizontal: 30),
-                              ),
-                              child: const Text(
-                                "Save",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
+              ProfilePic(
+                image:
+                    'https://st3.depositphotos.com/32927174/36182/v/450/depositphotos_361823194-stock-illustration-glowing-neon-line-create-account.jpg',
+                imageUploadBtnPress: () {
+                  // Logic for uploading image
+                },
               ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextFormField({
-    required String initialValue,
-    required String hintText,
-  }) {
-    return TextFormField(
-      initialValue: initialValue,
-      decoration: InputDecoration(
-        hintText: hintText,
-        filled: true,
-        fillColor: Colors.grey[200],
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide.none,
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 5,
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      UserInfoEditField(
+                        text: "Name",
+                        child: _buildTextFormField(
+                          controller: _controllers['name']!,
+                          hintText: "Enter your full name",
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Name is required';
+                            }
+                            if (!value.contains(' ')) {
+                              return 'Please enter both first and last name';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      UserInfoEditField(
+                        text: "ID",
+                        child: _buildTextFormField(
+                          controller: _controllers['id']!,
+                          hintText: "Enter your ID",
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      UserInfoEditField(
+                        text: "Registration",
+                        child: _buildTextFormField(
+                          controller: _controllers['reg']!,
+                          hintText: "Enter your registration number",
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      UserInfoEditField(
+                        text: "Email",
+                        child: _buildTextFormField(
+                          controller: _controllers['email']!,
+                          hintText: "Enter your email",
+                          enabled: false,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      UserInfoEditField(
+                        text: "Phone",
+                        child: _buildTextFormField(
+                          controller: _controllers['phone']!,
+                          hintText: "Enter your phone number",
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Phone number is required';
+                            }
+                            if (value.length < 10) {
+                              return 'Please enter a valid phone number';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      UserInfoEditField(
+                        text: "Department",
+                        child: _buildTextFormField(
+                          controller: _controllers['dept']!,
+                          hintText: "Enter your department",
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 15, horizontal: 30),
+                            ),
+                            child: const Text(
+                              "Cancel",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: _isLoading ? null : _saveProfile,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF2196F3),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 15, horizontal: 30),
+                            ),
+                            child: _isLoading
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Text(
+                                    "Save",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

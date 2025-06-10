@@ -1,10 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:schedula/profile/classmate/classmate_screen.dart';
 import 'package:schedula/profile/profile_details/profile_details.dart';
 import 'package:schedula/profile/profile_menu.dart';
-import 'package:schedula/profile/total_class/total_class_screen.dart';
 import 'package:schedula/userAccounts/user_model.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -121,34 +119,12 @@ class ProfileScreen extends StatelessWidget {
                       const SizedBox(height: 30),
                       // Menu Items
                       ProfileMenu(
-                        text: "Profile Details",
-                        icon: Icons.person_2_rounded,
+                        text: "Edit Profile",
+                        icon: Icons.edit,
                         press: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => const ProfileDetails(),
-                            ),
-                          );
-                        },
-                      ),
-                      ProfileMenu(
-                        text: "Classmates",
-                        icon: Icons.group_rounded,
-                        press: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const ClassmateScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      ProfileMenu(
-                        text: "Total Classes",
-                        icon: Icons.class_rounded,
-                        press: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (ctx) => const TotalClass(),
                             ),
                           );
                         },

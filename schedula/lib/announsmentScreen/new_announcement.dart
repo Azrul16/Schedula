@@ -5,12 +5,18 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:schedula/announsmentScreen/announce_model.dart';
+import 'package:schedula/announsmentScreen/announcement_service.dart';
 import 'package:schedula/classScreen/new_class.dart';
 import 'package:schedula/utils/all_dialouge.dart';
 import 'package:schedula/utils/toast_message.dart';
 
 class NewAnnouncement extends StatefulWidget {
-  const NewAnnouncement({super.key});
+  final String semester;
+  
+  const NewAnnouncement({
+    super.key,
+    required this.semester,
+  });
 
   @override
   State<NewAnnouncement> createState() => _NewAnnouncementState();
@@ -60,18 +66,44 @@ class _NewAnnouncementState extends State<NewAnnouncement> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
-  Future<void> sendClassNotesToFirestore(Announcements announcement) async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
+  Future<void> _publishAnnouncement(String? downloadUrl) async {
+    if (_titleController.text.trim().isEmpty) {
+      showToastMessageWarning('Please enter a title');
+      return;
+    }
+
+    if (_descriptionController.text.trim().isEmpty) {
+      showToastMessageWarning('Please enter description');
+      return;
+    }
+
+    showLoadingDialoge(context);
 
     try {
-      await firestore.collection('announcements').add(announcement.toJson());
-      print('Announcement added to Firestore successfully');
-      Navigator.of(context).pop();
-      Navigator.of(context).pop();
-      showToastMessageNormal('Announcement Published');
+      final docId = await AnnouncementService.createAnnouncement(
+        title: _titleController.text,
+        description: _descriptionController.text,
+        downloadURL: downloadUrl ?? '',
+        semester: widget.semester,
+      );
+
+      if (!mounted) return;
+      Navigator.pop(context); // Remove loading dialog
+      Navigator.pop(context); // Close the bottom sheet
+
+      if (docId != null) {
+        showToastMessageNormal('Announcement Published');
+        sendTopicNotification(
+          _titleController.text,
+          _descriptionController.text,
+        );
+      } else {
+        showToastMessageWarning('Failed to publish announcement');
+      }
     } catch (e) {
-      print('Error adding ClassNotes to Firestore: $e');
-      showToastMessageWarning('Error uploading');
+      if (!mounted) return;
+      Navigator.pop(context); // Remove loading dialog
+      showToastMessageWarning('Error: ${e.toString()}');
     }
   }
 
@@ -130,30 +162,8 @@ class _NewAnnouncementState extends State<NewAnnouncement> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  String? downloadUrl = await uploadFileToFirebase();
-                  if (downloadUrl != null) {
-                    showLoadingDialoge(context);
-                    Announcements announcement = Announcements(
-                      title: _titleController.text,
-                      downloadURL: downloadUrl,
-                      description: _descriptionController.text,
-                      docID: '',
-                    );
-                    await sendClassNotesToFirestore(announcement);
-                  } else {
-                    showLoadingDialoge(context);
-                    Announcements announcement = Announcements(
-                      title: _titleController.text,
-                      downloadURL: '',
-                      description: _descriptionController.text,
-                      docID: '',
-                    );
-                    await sendClassNotesToFirestore(announcement);
-                  }
-                  sendTopicNotification(
-                    _titleController.text,
-                    _descriptionController.text,
-                  );
+                  final downloadUrl = await uploadFileToFirebase();
+                  await _publishAnnouncement(downloadUrl);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,

@@ -1,5 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:schedula/announsmentScreen/announcement_screen.dart';
 import 'package:schedula/assignments/assignment_screen.dart';
 import 'package:schedula/chatAI/chat_screen.dart';
@@ -17,26 +19,58 @@ class StartScreen extends StatefulWidget {
 class _StartScreenState extends State<StartScreen> {
   int _currentIndex = 0;
   final PageController _pageController = PageController();
+  late List<Widget> _pages;
+  Map<String, dynamic>? _userData;
 
-  final List<Widget> _pages = [
-    const ClassScren(),
-    const NoteScreen(),
-    const AssignmentsPage(),
-    const ChatScreen(),
-    const ProfileScreen(),
-  ];
+  Future<void> _initializeUserData() async {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      String currentEmail = currentUser.email!;
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('users').get();
 
-  void onTappedBar(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-    _pageController.jumpToPage(index);
+      for (var doc in querySnapshot.docs) {
+        if (doc['email'] == currentEmail) {
+          setState(() {
+            _userData = doc.data() as Map<String, dynamic>;
+            _pages = [
+              const ClassScren(),
+              NoteScreen(
+                currentUserId: currentUser.uid,
+                semester: _userData?['semister'] ?? '',
+                isCaptain: _userData?['isCaptain'] ?? false,
+              ),
+              const AssignmentsPage(),
+              ChatScreen(),
+              const ProfileScreen(),
+            ];
+          });
+          break;
+        }
+      }
+    }
   }
 
   @override
   void initState() {
     super.initState();
     requesPermission();
+    _pages = [
+      const ClassScren(),
+      const Center(
+          child: CircularProgressIndicator()), // Placeholder while loading
+      const AssignmentsPage(),
+      ChatScreen(),
+      const ProfileScreen(),
+    ];
+    _initializeUserData();
+  }
+
+  void onTappedBar(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+    _pageController.jumpToPage(index);
   }
 
   Future<void> requesPermission() async {
@@ -78,7 +112,7 @@ class _StartScreenState extends State<StartScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.campaign),
-            label: 'Announcement',
+            label: 'Assignments',
             backgroundColor: Colors.purple,
           ),
           BottomNavigationBarItem(

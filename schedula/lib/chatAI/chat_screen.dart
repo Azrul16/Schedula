@@ -1,362 +1,218 @@
-import 'dart:io';
-
-import 'package:chatview/chatview.dart';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:schedula/chatAI/chat_data.dart';
-import 'package:schedula/chatAI/theme_chat.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // Import dotenv
+
+void main() async {
+  await dotenv.load(); // Load environment variables
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Chat App',
+      theme: ThemeData(
+        primarySwatch: Colors.pink,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: ChatScreen(),
+    );
+  }
+}
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
-
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  _ChatScreenState createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  GenerativeModel? geminiModel;
-  ChatSession? chat;
-  AppTheme theme = LightTheme();
-  bool isDarkTheme = false;
-  final _chatController = ChatController(
-    initialMessageList: [
-      Message(
-        id: DateTime.now().toString(),
-        createdAt: DateTime.now(),
-        message: 'Hi, Good Day. How are you feeling today?',
-        sentBy: '2',
-        replyMessage: const ReplyMessage(),
-        messageType: MessageType.text,
-      ),
-    ],
-    scrollController: ScrollController(),
-    currentUser: ChatUser(
-      id: '1',
-      name: 'You',
-      profilePhoto: Data.profileImage,
-    ),
-    otherUsers: [
-      ChatUser(
-        id: '2',
-        name: 'AI Assistant',
-        profilePhoto: Data.profileImage,
-      ),
-    ],
-  );
+  final TextEditingController _controller = TextEditingController();
+  final List<Map<String, String>> _messages = [
+    {'sender': 'User', 'text': 'Hello!'},
+    {'sender': 'Bot', 'text': 'Hi, how can I help you?'},
+  ];
 
-  void _showHideTypingIndicator() {
-    _chatController.setTypingIndicator = !_chatController.showTypingIndicator;
+  Future<String> getGeminiResponse(String userMessage) async {
+    // Correctly load the API key from the .env file
+    // Assuming your .env file has a key named 'GEMINI_API_KEY'
+    // The hardcoded API key has been removed here to ensure it's loaded from .env
+    final String geminiAPI = dotenv.env['GEMINI_API_KEY'] ??
+        'AIzaSyD18uTjUHvJ-5_sn38ssEdevu9zqTH1Zao';
+
+    if (geminiAPI.isEmpty) {
+      return 'Error: API key is missing..';
+    }
+
+    final String url =
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$geminiAPI';
+
+    final headers = {'Content-Type': 'application/json'};
+
+    final body = json.encode({
+      "contents": [
+        {
+          "parts": [
+            {"text": userMessage},
+          ],
+        },
+      ],
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        // Safely access the nested 'text' content from the Gemini API response
+        if (data['candidates'] != null &&
+            data['candidates'].isNotEmpty &&
+            data['candidates'][0]['content'] != null &&
+            data['candidates'][0]['content']['parts'] != null &&
+            data['candidates'][0]['content']['parts'].isNotEmpty &&
+            data['candidates'][0]['content']['parts'][0]['text'] != null) {
+          return data['candidates'][0]['content']['parts'][0]['text'];
+        } else {
+          // Provide more detail if the expected structure is not found
+          return 'No valid response content or candidates found in API response. Response body: ${response.body}';
+        }
+      } else {
+        // Include the response body for better debugging of API errors
+        return 'Error: Unable to fetch response. Status code: ${response.statusCode}. Response body: ${response.body}';
+      }
+    } catch (e) {
+      return 'Error: $e';
+    }
   }
 
-  void receiveMessage() async {
-    _chatController.addMessage(
-      Message(
-        id: DateTime.now().toString(),
-        message: 'I will schedule the meeting.',
-        createdAt: DateTime.now(),
-        sentBy: '2',
+  void _sendMessage() async {
+    if (_controller.text.isNotEmpty) {
+      // Add user message to the list
+      setState(() {
+        _messages.add({'sender': 'User', 'text': _controller.text});
+      });
+
+      // Show a loading indicator or similar while waiting for bot response (optional but good UX)
+      // For simplicity, we'll just add the bot response when it arrives.
+
+      // Get the bot's response from the Gemini API
+      final botResponse = await getGeminiResponse(_controller.text);
+
+      // Add bot message to the list
+      setState(() {
+        _messages.add({'sender': 'Bot', 'text': botResponse});
+      });
+
+      _controller.clear(); // Clear the text field after sending
+    }
+  }
+
+  Widget _buildMessageBubble(String sender, String message) {
+    bool isUser = sender == 'User';
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+      child: Align(
+        alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+          decoration: BoxDecoration(
+            color: isUser
+                ? Colors.pink[100] // Light pink for user
+                : Colors.pink[300], // Darker pink for bot
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.2),
+                spreadRadius: 1,
+                blurRadius: 5,
+              ),
+            ],
+          ),
+          child: Text(
+            message,
+            style: TextStyle(
+              color: isUser ? Colors.black : Colors.white,
+              fontSize: 16,
+            ),
+          ),
+        ),
       ),
     );
-    await Future.delayed(const Duration(milliseconds: 500));
-    _chatController.addReplySuggestions([
-      const SuggestionItemData(text: 'Thanks.'),
-      const SuggestionItemData(text: 'Thank you very much.'),
-      const SuggestionItemData(text: 'Great.')
-    ]);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ChatView(
-        chatController: _chatController,
-        onSendTap: _onSendTap,
-        featureActiveConfig: const FeatureActiveConfig(
-          lastSeenAgoBuilderVisibility: true,
-          receiptsBuilderVisibility: true,
-        ),
-        chatViewState: ChatViewState.hasMessages,
-        chatViewStateConfig: ChatViewStateConfiguration(
-          loadingWidgetConfig: ChatViewStateWidgetConfiguration(
-            loadingIndicatorColor: theme.outgoingChatBubbleColor,
-          ),
-          onReloadButtonTap: () {},
-        ),
-        typeIndicatorConfig: TypeIndicatorConfiguration(
-          flashingCircleBrightColor: theme.flashingCircleBrightColor,
-          flashingCircleDarkColor: theme.flashingCircleDarkColor,
-        ),
-        appBar: ChatViewAppBar(
-          elevation: theme.elevation,
-          backGroundColor: Colors.pink,
-          profilePicture: Data.profileImage,
-          onBackPress: () {},
-          backArrowColor: Colors.pink,
-          chatTitle: "AI Assistant",
-          chatTitleTextStyle: TextStyle(
-            color: theme.appBarTitleTextStyle,
+      appBar: AppBar(
+        backgroundColor: Colors.pink,
+        title: Text(
+          'Chat with Gemini',
+          style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 18,
-            letterSpacing: 0.25,
-          ),
-          userStatus: "online",
-          userStatusTextStyle: const TextStyle(color: Colors.grey),
-          // actions: [
-          //   IconButton(
-          //     onPressed: _onThemeIconTap,
-          //     icon: Icon(
-          //       isDarkTheme
-          //           ? Icons.brightness_4_outlined
-          //           : Icons.dark_mode_outlined,
-          //       color: theme.themeIconColor,
-          //     ),
-          //   ),
-          // ],
-        ),
-        chatBackgroundConfig: ChatBackgroundConfiguration(
-          messageTimeIconColor: theme.messageTimeIconColor,
-          messageTimeTextStyle: TextStyle(color: theme.messageTimeTextColor),
-          defaultGroupSeparatorConfig: DefaultGroupSeparatorConfiguration(
-            textStyle: TextStyle(
-              color: theme.chatHeaderColor,
-              fontSize: 17,
-            ),
-          ),
-          backgroundColor: theme.backgroundColor,
-        ),
-        sendMessageConfig: SendMessageConfiguration(
-          imagePickerIconsConfig: ImagePickerIconsConfiguration(
-            cameraIconColor: theme.cameraIconColor,
-            galleryIconColor: theme.galleryIconColor,
-          ),
-          replyMessageColor: theme.replyMessageColor,
-          defaultSendButtonColor: theme.sendButtonColor,
-          replyDialogColor: theme.replyDialogColor,
-          replyTitleColor: theme.replyTitleColor,
-          textFieldBackgroundColor: theme.textFieldBackgroundColor,
-          closeIconColor: theme.closeIconColor,
-          textFieldConfig: TextFieldConfiguration(
-            onMessageTyping: (status) {
-              /// Do with status
-              debugPrint(status.toString());
-            },
-            compositionThresholdTime: const Duration(seconds: 1),
-            textStyle: TextStyle(color: theme.textFieldTextColor),
-          ),
-          micIconColor: theme.replyMicIconColor,
-          voiceRecordingConfiguration: VoiceRecordingConfiguration(
-            backgroundColor: theme.waveformBackgroundColor,
-            recorderIconColor: theme.recordIconColor,
-            waveStyle: WaveStyle(
-              showMiddleLine: false,
-              waveColor: theme.waveColor ?? Colors.white,
-              extendWaveform: true,
-            ),
-          ),
-        ),
-        chatBubbleConfig: ChatBubbleConfiguration(
-          outgoingChatBubbleConfig: ChatBubble(
-            linkPreviewConfig: LinkPreviewConfiguration(
-              backgroundColor: theme.linkPreviewOutgoingChatColor,
-              bodyStyle: theme.outgoingChatLinkBodyStyle,
-              titleStyle: theme.outgoingChatLinkTitleStyle,
-            ),
-            receiptsWidgetConfig:
-                const ReceiptsWidgetConfig(showReceiptsIn: ShowReceiptsIn.all),
-            color: theme.outgoingChatBubbleColor,
-          ),
-          inComingChatBubbleConfig: ChatBubble(
-            linkPreviewConfig: LinkPreviewConfiguration(
-              linkStyle: TextStyle(
-                color: theme.inComingChatBubbleTextColor,
-                decoration: TextDecoration.underline,
-              ),
-              backgroundColor: theme.linkPreviewIncomingChatColor,
-              bodyStyle: theme.incomingChatLinkBodyStyle,
-              titleStyle: theme.incomingChatLinkTitleStyle,
-            ),
-            textStyle: TextStyle(color: theme.inComingChatBubbleTextColor),
-            onMessageRead: (message) {
-              /// send your message reciepts to the other client
-              debugPrint('Message Read');
-            },
-            senderNameTextStyle:
-                TextStyle(color: theme.inComingChatBubbleTextColor),
-            color: theme.inComingChatBubbleColor,
-          ),
-        ),
-        replyPopupConfig: ReplyPopupConfiguration(
-          backgroundColor: theme.replyPopupColor,
-          buttonTextStyle: TextStyle(color: theme.replyPopupButtonColor),
-          topBorderColor: theme.replyPopupTopBorderColor,
-        ),
-        reactionPopupConfig: ReactionPopupConfiguration(
-          shadow: BoxShadow(
-            color: isDarkTheme ? Colors.black54 : Colors.grey.shade400,
-            blurRadius: 20,
-          ),
-          backgroundColor: theme.reactionPopupColor,
-        ),
-        messageConfig: MessageConfiguration(
-          messageReactionConfig: MessageReactionConfiguration(
-            backgroundColor: theme.messageReactionBackGroundColor,
-            borderColor: theme.messageReactionBackGroundColor,
-            reactedUserCountTextStyle:
-                TextStyle(color: theme.inComingChatBubbleTextColor),
-            reactionCountTextStyle:
-                TextStyle(color: theme.inComingChatBubbleTextColor),
-            reactionsBottomSheetConfig: ReactionsBottomSheetConfiguration(
-              backgroundColor: theme.backgroundColor,
-              reactedUserTextStyle: TextStyle(
-                color: theme.inComingChatBubbleTextColor,
-              ),
-              reactionWidgetDecoration: BoxDecoration(
-                color: theme.inComingChatBubbleColor,
-                boxShadow: [
-                  BoxShadow(
-                    color: isDarkTheme ? Colors.black12 : Colors.grey.shade200,
-                    offset: const Offset(0, 20),
-                    blurRadius: 40,
-                  )
-                ],
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
-          imageMessageConfig: ImageMessageConfiguration(
-            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
-            shareIconConfig: ShareIconConfiguration(
-              defaultIconBackgroundColor: theme.shareIconBackgroundColor,
-              defaultIconColor: theme.shareIconColor,
-            ),
-          ),
-        ),
-        profileCircleConfig: const ProfileCircleConfiguration(
-          profileImageUrl: Data.profileImage,
-        ),
-        repliedMessageConfig: RepliedMessageConfiguration(
-          backgroundColor: theme.repliedMessageColor,
-          verticalBarColor: theme.verticalBarColor,
-          repliedMsgAutoScrollConfig: RepliedMsgAutoScrollConfig(
-            enableHighlightRepliedMsg: true,
-            highlightColor: Colors.pinkAccent.shade100,
-            highlightScale: 1.1,
-          ),
-          textStyle: const TextStyle(
             color: Colors.white,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 0.25,
-          ),
-          replyTitleTextStyle: TextStyle(color: theme.repliedTitleTextColor),
+          ), // Added white color for better contrast
         ),
-        swipeToReplyConfig: SwipeToReplyConfiguration(
-          replyIconColor: theme.swipeToReplyIconColor,
-        ),
-        replySuggestionsConfig: ReplySuggestionsConfig(
-          itemConfig: SuggestionItemConfig(
-            decoration: BoxDecoration(
-              color: theme.textFieldBackgroundColor,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: theme.outgoingChatBubbleColor ?? Colors.white,
-              ),
-            ),
-            textStyle: TextStyle(
-              color: isDarkTheme ? Colors.white : Colors.black,
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: _messages.length,
+              itemBuilder: (context, index) {
+                final message = _messages[index];
+                return _buildMessageBubble(
+                  message['sender']!,
+                  message['text']!,
+                );
+              },
             ),
           ),
-          onTap: (item) =>
-              _onSendTap(item.text, const ReplyMessage(), MessageType.text),
-        ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      hintText: 'Type a message...',
+                      hintStyle: TextStyle(color: Colors.pink[200]),
+                      filled: true,
+                      fillColor: Colors.pink[50],
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ), // Adjust padding
+                    ),
+                    onSubmitted: (text) {
+                      _sendMessage(); // Send message when "Enter" is pressed
+                    },
+                  ),
+                ),
+                SizedBox(
+                  width: 8,
+                ), // Add some space between text field and button
+                FloatingActionButton(
+                  onPressed: _sendMessage,
+                  child: Icon(Icons.send, color: Colors.white),
+                  backgroundColor: Colors.pink,
+                  elevation: 2, // Add a slight shadow
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
-  }
-
-  initializeGemini() async {
-    final apiKey = dotenv.env['gemini_api'];
-    if (apiKey == null) {
-      print('No \$API_KEY environment variable');
-      return;
-    }
-
-    // The Gemini 1.5 models are versatile and work with most use cases
-    // geminiModel = GenerativeModel(model: 'gemini-1.5-flash', apiKey: apiKey);
-    geminiModel = GenerativeModel(
-        model: 'gemini-1.5-flash',
-        apiKey: apiKey,
-        generationConfig: GenerationConfig(maxOutputTokens: 100));
-    chat = geminiModel?.startChat();
-  }
-
-  generetiveAIResponse(Message prompt) async {
-    if (chat == null) {
-      await initializeGemini();
-    }
-    Content content;
-    if (prompt.messageType == MessageType.image) {
-      print(prompt.toJson());
-      final imageBytes = await File(prompt.message).readAsBytes();
-      content = Content.data('image/png', imageBytes);
-    } else {
-      content = Content.text(prompt.message);
-    }
-    final response = await chat!.sendMessage(content);
-
-    _chatController.setTypingIndicator = false;
-
-    _chatController.addMessage(
-      Message(
-        id: DateTime.now().toString(),
-        createdAt: DateTime.now(),
-        message: response.text!,
-        sentBy: '2',
-        replyMessage: ReplyMessage(
-          message:
-              prompt.messageType != MessageType.text ? 'Photo' : prompt.message,
-          messageId: prompt.id,
-          messageType: MessageType.text,
-          replyBy: '2',
-          replyTo: '1',
-        ),
-        messageType: MessageType.text,
-      ),
-    );
-  }
-
-  void _onSendTap(
-    String message,
-    ReplyMessage replyMessage,
-    MessageType messageType,
-  ) async {
-    final promptMessage = Message(
-      id: DateTime.now().toString(),
-      createdAt: DateTime.now(),
-      message: message,
-      sentBy: _chatController.currentUser.id,
-      replyMessage: replyMessage,
-      messageType: messageType,
-    );
-    _chatController.addMessage(promptMessage);
-    Future.delayed(const Duration(milliseconds: 300), () {
-      _chatController.initialMessageList.last.setStatus =
-          MessageStatus.undelivered;
-    });
-    _chatController.initialMessageList.last.setStatus = MessageStatus.read;
-    _chatController.setTypingIndicator = true;
-    await generetiveAIResponse(promptMessage);
-  }
-
-  void _onThemeIconTap() {
-    setState(() {
-      if (isDarkTheme) {
-        theme = LightTheme();
-        isDarkTheme = false;
-      } else {
-        theme = DarkTheme();
-        isDarkTheme = true;
-      }
-    });
   }
 }

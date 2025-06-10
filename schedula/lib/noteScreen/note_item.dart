@@ -8,7 +8,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:schedula/utils/all_dialouge.dart';
 import 'dart:io';
-
 import 'package:schedula/utils/toast_message.dart';
 
 class NotesItem extends StatefulWidget {
@@ -32,9 +31,8 @@ class NotesItem extends StatefulWidget {
           .doc(notesItem.docID)
           .delete();
     } catch (error) {
-      print('Error deleting class: $error');
+      print('Error deleting note: $error');
     }
-    print(notesItem.docID);
   }
 
   @override
@@ -47,27 +45,23 @@ class _NotesItemState extends State<NotesItem> {
   String? _filePath;
 
   Future<void> downloadFile(String downloadURL) async {
-    // Request storage permission
     var status = await Permission.storage.request();
     if (status.isGranted) {
       setState(() {
         _isDownloading = true;
+        _progress = "0%";
       });
 
       try {
-        // Get the Downloads directory
-        Directory downloadsDirectory =
-            Directory('/storage/emulated/0/Download');
-        if (!downloadsDirectory.existsSync()) {
-          downloadsDirectory =
-              await getExternalStorageDirectory() ?? downloadsDirectory;
+        Directory? downloadsDirectory = await getExternalStorageDirectory();
+        if (downloadsDirectory == null) {
+          showToastMessageWarning("Could not access storage directory.");
+          return;
         }
 
-        // Extract the file name and extension from the URL
         String fileName = downloadURL.split('/').last.split('?').first;
         String filePath = '${downloadsDirectory.path}/$fileName';
 
-        // Download the file
         Dio dio = Dio();
         await dio.download(
           downloadURL,
@@ -76,7 +70,6 @@ class _NotesItemState extends State<NotesItem> {
             if (total != -1) {
               setState(() {
                 _progress = "${((received / total) * 100).toStringAsFixed(0)}%";
-                showToastMessageNormal('Download Started');
               });
             }
           },
@@ -84,21 +77,22 @@ class _NotesItemState extends State<NotesItem> {
 
         setState(() {
           _filePath = filePath;
+          _isDownloading = false;
         });
 
-        print('File downloaded to $filePath');
-        showSuccessDialoge(context);
-        showToastMessageNormal('File downloaded to $filePath');
+        if (mounted) {
+          showSuccessDialoge(context);
+          showToastMessageNormal('File downloaded successfully');
+        }
       } catch (e) {
-        print('Failed to download file: $e');
-        showToastMessageWarning('Failed to download file: $e');
-      } finally {
+        if (mounted) {
+          showToastMessageWarning('Failed to download file: $e');
+        }
         setState(() {
           _isDownloading = false;
         });
       }
     } else {
-      print('Storage permission denied');
       showToastMessageWarning('Storage permission denied');
     }
   }
@@ -110,21 +104,43 @@ class _NotesItemState extends State<NotesItem> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Delete'),
-            content: const Text('Are you sure you want to delete this note?'),
+            title: Text(
+              'Delete Note',
+              style: GoogleFonts.lato(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            content: Text(
+              'Are you sure you want to delete this note?',
+              style: GoogleFonts.lato(),
+            ),
             actions: <Widget>[
               TextButton(
-                child: const Text('Cancel'),
+                child: Text(
+                  'Cancel',
+                  style: GoogleFonts.lato(
+                    color: Colors.grey[700],
+                  ),
+                ),
                 onPressed: () {
-                  Navigator.of(context).pop(); // Close the dialog
+                  Navigator.of(context).pop();
                 },
               ),
               TextButton(
                 onPressed: () async {
                   await widget.delete();
-                  Navigator.of(context).pop(); // Close the dialog
+                  if (mounted) {
+                    Navigator.of(context).pop();
+                    showToastMessageNormal('Note deleted successfully');
+                  }
                 },
-                child: const Text('Delete'),
+                child: Text(
+                  'Delete',
+                  style: GoogleFonts.lato(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           );
@@ -139,63 +155,79 @@ class _NotesItemState extends State<NotesItem> {
       borderColor: Colors.green[700],
       borderThickness: 10,
       textureOpacity: 2,
-      margin: const EdgeInsets.all(5),
+      margin: const EdgeInsets.all(12),
       textureFit: BoxFit.cover,
       texture: true,
-      child: Row(
-        children: [
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                child: Text(
-                  widget.notesItem.courseTitle,
-                  style: GoogleFonts.getFont(
-                    'Montserrat',
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.notesItem.courseTitle,
+                    style: GoogleFonts.lato(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green[900],
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'By ${widget.notesItem.courseTecher}',
+                    style: GoogleFonts.lato(
+                      fontSize: 14,
+                      color: Colors.grey[800],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              children: [
+                IconButton(
+                  onPressed: () => showDeleteDialog(context),
+                  icon: Icon(
+                    Icons.delete_outline,
+                    color: Colors.red[700],
+                    size: 24,
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                child: Text(
-                  widget.notesItem.courseTitle,
-                  style: GoogleFonts.getFont(
-                    'Montserrat',
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const Spacer(),
-          Column(
-            children: [
-              IconButton(
-                onPressed: () {
-                  showDeleteDialog(context);
-                },
-                icon: const Icon(
-                  Icons.delete,
-                  color: Colors.red,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              IconButton(
-                onPressed: () {
-                  String downloadURL = widget.notesItem.downloadURL;
-                  downloadFile(downloadURL);
-                },
-                icon: const Icon(Icons.download),
-                color: Colors.green,
-              ),
-            ],
-          ),
-        ],
+                const SizedBox(height: 4),
+                _isDownloading
+                    ? Column(
+                        children: [
+                          const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            _progress,
+                            style: GoogleFonts.lato(
+                              fontSize: 12,
+                              color: Colors.green[700],
+                            ),
+                          ),
+                        ],
+                      )
+                    : IconButton(
+                        onPressed: () => downloadFile(widget.notesItem.downloadURL),
+                        icon: Icon(
+                          Icons.download_outlined,
+                          color: Colors.green[700],
+                          size: 24,
+                        ),
+                      ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

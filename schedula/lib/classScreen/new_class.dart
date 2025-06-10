@@ -1,39 +1,58 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:schedula/classScreen/class_models.dart';
-
+import 'package:schedula/utils/course_data.dart';
 import 'package:http/http.dart' as http;
-// For encoding URL parameters
 
 class NewClass extends StatefulWidget {
-  const NewClass({super.key, required this.onAddClass});
+  const NewClass({
+    super.key,
+    required this.onAddClass,
+    required this.currentUserId,
+    required this.semester,
+    required this.isCaptain,
+  });
 
   final void Function(ClassSchedule classSchedule) onAddClass;
+  final String currentUserId;
+  final String semester;
+  final bool isCaptain;
+
   @override
-  State<StatefulWidget> createState() {
-    return _NewClassState();
-  }
+  State<StatefulWidget> createState() => _NewClassState();
 }
 
 class _NewClassState extends State<NewClass> {
-  final _titleController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   final _teacherController = TextEditingController();
-  final _courseController = TextEditingController();
+  final TextEditingController _courseTitleController = TextEditingController();
+  final TextEditingController _courseCodeController = TextEditingController();
   DateTime? _selectedDate;
-  DateTime? _selectedTime;
+  TimeOfDay? _selectedTime;
+  bool _isLoading = false;
 
-  DateTime convertToDateTime(TimeOfDay timeOfDay) {
-    DateTime now = DateTime.now();
-    DateTime dateTime = DateTime(
-      now.year,
-      now.month,
-      now.day,
-      timeOfDay.hour,
-      timeOfDay.minute,
-    );
+  @override
+  void dispose() {
+    _teacherController.dispose();
+    _courseTitleController.dispose();
+    _courseCodeController.dispose();
+    super.dispose();
+  }
 
-    return dateTime;
+  DateTime? _combinedDateTime;
+
+  void _updateCombinedDateTime() {
+    if (_selectedDate != null && _selectedTime != null) {
+      _combinedDateTime = DateTime(
+        _selectedDate!.year,
+        _selectedDate!.month,
+        _selectedDate!.day,
+        _selectedTime!.hour,
+        _selectedTime!.minute,
+      );
+    }
   }
 
   void _timePicker() async {
@@ -41,204 +60,312 @@ class _NewClassState extends State<NewClass> {
     final pickedTime = await showTimePicker(
       context: context,
       initialTime: initialTime,
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Colors.amber.shade700,
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
-    setState(() {
-      _selectedTime = convertToDateTime(pickedTime!);
-    });
+
+    if (pickedTime != null) {
+      setState(() {
+        _selectedTime = pickedTime;
+        _updateCombinedDateTime();
+      });
+    }
   }
 
   void _datePicker() async {
     final now = DateTime.now();
     final firstDate = DateTime(now.year, now.month, now.day);
-    final lastDate = DateTime(now.year, now.month + 7, now.day);
+    final lastDate = DateTime(now.year + 1, now.month, now.day);
+
     final pickedDate = await showDatePicker(
       context: context,
+      initialDate: now,
       firstDate: firstDate,
       lastDate: lastDate,
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Colors.amber.shade700,
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
-    setState(() {
-      _selectedDate = pickedDate;
-    });
+
+    if (pickedDate != null) {
+      setState(() {
+        _selectedDate = pickedDate;
+        _updateCombinedDateTime();
+      });
+    }
   }
 
-  void _submitClassDate() async {
-    if (_titleController.text.trim().isEmpty ||
-        _selectedDate == null ||
-        _selectedTime == null ||
-        _teacherController.text.trim().isEmpty) {
-      showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Text('Invalid Input'),
-          content: const Text(
-              'Please make sure that you have entered value to all field.'),
-          actions: [
-            TextButton(
-                onPressed: () {
-                  Navigator.pop(ctx);
-                },
-                child: const Text('Okey'))
-          ],
+  Future<void> _submitClassDate() async {
+    if (!_formKey.currentState!.validate() || _combinedDateTime == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Please fill in all fields',
+            style: GoogleFonts.lato(),
+          ),
+          backgroundColor: Colors.red,
         ),
       );
       return;
     }
 
-    final classTime = DateTime(_selectedDate!.year, _selectedDate!.month,
-        _selectedDate!.day, _selectedTime!.hour, _selectedTime!.minute);
+    setState(() {
+      _isLoading = true;
+    });
 
-    final thisClass = ClassSchedule(
-      docID: '',
-      courseTitle: _titleController.text,
-      courseTecher: _teacherController.text,
-      time: classTime,
-      courseCode: _courseController.text,
-    );
+    try {
+      final thisClass = ClassSchedule(
+          docID: '',
+          courseTitle: _courseTitleController.text.trim(),
+          courseTecher: _teacherController.text.trim(),
+          time: _combinedDateTime!,
+          courseCode: _courseCodeController.text.trim(),
+          semester: widget.semester,
+          creatorId: widget.currentUserId,
+          creatorIsCaptain: widget.isCaptain);
 
-    await FirebaseFirestore.instance
-        .collection('classes')
-        .add(thisClass.toJSON());
-    // ignore: use_build_context_synchronously
-    Navigator.pop(context);
-  }
+      await FirebaseFirestore.instance
+          .collection('classes')
+          .add(thisClass.toJSON());
 
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _teacherController.dispose();
-    _courseController.dispose();
-    super.dispose();
+      // Send notification
+      await sendTopicNotification(
+        _courseTitleController.text.trim(),
+        'New class by ${_teacherController.text.trim()}',
+      );
+
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Class created successfully!',
+              style: GoogleFonts.lato(),
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Failed to create class: $e',
+              style: GoogleFonts.lato(),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          const SizedBox(
-            height: 60,
-          ),
-          TextField(
-            controller: _titleController,
-            maxLength: 25,
-            decoration: const InputDecoration(
-              label: Text('Course Title'),
+      padding: EdgeInsets.fromLTRB(
+        20,
+        20,
+        20,
+        20,
+        // MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Create New Class',
+              style: GoogleFonts.lato(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.amber[900],
+              ),
             ),
-          ),
-          TextField(
-            controller: _teacherController,
-            maxLength: 20,
-            decoration: const InputDecoration(
-              label: Text("Teacher's name"),
+            const SizedBox(height: 20),
+            TextFormField(
+              controller: _courseTitleController,
+              decoration: InputDecoration(
+                labelText: 'Course Title',
+                border: const OutlineInputBorder(),
+                labelStyle: GoogleFonts.lato(),
+              ),
+              style: GoogleFonts.lato(),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Please enter course title';
+                }
+                return null;
+              },
             ),
-          ),
-          TextField(
-            controller: _courseController,
-            maxLength: 8,
-            decoration: const InputDecoration(
-              label: Text('Course Code'),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _courseCodeController,
+              decoration: InputDecoration(
+                labelText: 'Course Code',
+                border: const OutlineInputBorder(),
+                labelStyle: GoogleFonts.lato(),
+              ),
+              style: GoogleFonts.lato(),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Please enter course code';
+                }
+                return null;
+              },
             ),
-          ),
-          Row(
-            children: [
-              Text(
-                _selectedTime == null
-                    ? 'Select Class Time'
-                    : DateFormat.jm().format(_selectedTime!),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _teacherController,
+              decoration: InputDecoration(
+                labelText: 'Teacher Name',
+                border: const OutlineInputBorder(),
+                labelStyle: GoogleFonts.lato(),
               ),
-              IconButton(
-                onPressed: _timePicker,
-                icon: const Icon(Icons.timer),
-              ),
-              const Spacer(),
-              Text(
-                _selectedDate == null
-                    ? "Select a Date"
-                    : DateFormat('d MMMM').format(_selectedDate!),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-              ),
-              IconButton(
-                onPressed: _datePicker,
-                icon: const Icon(Icons.calendar_month),
-              )
-            ],
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Row(
-            children: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _submitClassDate();
-                  sendTopicNotification(
-                    _titleController.text,
-                    _teacherController.text,
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                ),
-                child: const Text(
-                  'Save Class',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
+              style: GoogleFonts.lato(),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Please enter teacher name';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: InkWell(
+                    onTap: _timePicker,
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: 'Class Time',
+                        border: const OutlineInputBorder(),
+                        labelStyle: GoogleFonts.lato(),
+                      ),
+                      child: Text(
+                        _selectedTime == null
+                            ? 'Select Time'
+                            : _selectedTime!.format(context),
+                        style: GoogleFonts.lato(),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
+                const SizedBox(width: 16),
+                Expanded(
+                  child: InkWell(
+                    onTap: _datePicker,
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: 'Class Date',
+                        border: const OutlineInputBorder(),
+                        labelStyle: GoogleFonts.lato(),
+                      ),
+                      child: Text(
+                        _selectedDate == null
+                            ? 'Select Date'
+                            : DateFormat('MMM d, y').format(_selectedDate!),
+                        style: GoogleFonts.lato(),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: _isLoading ? null : () => Navigator.pop(context),
+                  child: Text(
+                    'Cancel',
+                    style: GoogleFonts.lato(color: Colors.grey[700]),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _submitClassDate,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber[700],
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Text(
+                          'Create Class',
+                          style: GoogleFonts.lato(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-// Function to send GET request to the endpoint
+// Function to send notification
 Future<void> sendTopicNotification(String title, String body) async {
-  // The base URL of your Cloud Function
   const String baseUrl =
       'https://us-central1-schedula-6bd5d.cloudfunctions.net/sendTopicNotification';
 
-  // Query parameters
   final Map<String, String> queryParams = {
     'topic': 'general',
     'title': title,
     'body': body,
   };
 
-  // Encode the parameters into the URL
   final Uri uri = Uri.parse(baseUrl).replace(queryParameters: queryParams);
 
   try {
-    // Send GET request to the Firebase Cloud Function
     final response = await http.get(uri);
-
-    // Check the response status code
-    if (response.statusCode == 200) {
-      print('Notification sent successfully!');
-    } else {
+    if (response.statusCode != 200) {
       print('Failed to send notification. Status code: ${response.statusCode}');
       print('Response body: ${response.body}');
     }
   } catch (e) {
-    // Handle any errors that occurred during the request
     print('Error occurred while sending notification: $e');
   }
 }
