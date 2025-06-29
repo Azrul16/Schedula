@@ -1,14 +1,12 @@
-## 🚀 Schedula Flutter App
+# 🚀 Schedula Flutter App
 
 [![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev/)
 [![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
 [![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 ## 📖 Table of Contents
 - [Project Overview](#-project-overview)
 - [Key Features](#-key-features)
-- [Screenshots & Demo](#-screenshots--demo)
 - [Getting Started](#-getting-started)
 - [Download APK](#-download-apk)
 - [FAQ](#-faq)
@@ -16,18 +14,11 @@
 - [Roadmap](#-roadmap)
 - [Technologies Used](#-technologies-used)
 - [Support & Community](#-support--community)
-- [License](#-license)
 - [Contributors](#-contributors)
 - [Author](#-author)
 
 ## 📖 Project Overview
 Schedula is a Flutter-based mobile application designed to manage academic schedules, assignments, announcements, notes, user profiles, and chat functionalities. The app integrates Firebase for backend services and supports user authentication, real-time chat, and AI-powered chat features.
-
-<p align="center">
-  <img src="https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif" alt="App Demo" width="400"/>
-</p>
-
-## Features
 
 ### ✨ Key Features
 - 📅 **Admin Dashboard:** Manage semesters, classes, assignments, notes, and students.
@@ -42,11 +33,6 @@ Schedula is a Flutter-based mobile application designed to manage academic sched
 - 🔐 **Permissions:** Handles app permissions dynamically on startup.
 - 🔥 **Firebase Integration:** Uses Firebase for backend services and authentication.
 - ⚙️ **Environment Configuration:** Supports environment variables via `.env` file.
-
-## 🖼️ Screenshots & Demo
-<p align="center">
-  <img src="https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif" alt="App Demo" width="400"/>
-</p>
 
 ## 🚀 Getting Started
 
@@ -96,11 +82,37 @@ Schedula is a Flutter-based mobile application designed to manage academic sched
 ## Contribution Guidelines
 We welcome contributions! Please follow these steps:
 
-1. Fork the repository.
-2. Create a new branch for your feature or bugfix.
-3. Make your changes with clear commit messages.
-4. Test your changes thoroughly.
-5. Submit a pull request with a detailed description.
+1. Fork the repository.  
+   *(Use the "Fork" button on GitHub)*
+
+2. Clone the repository:  
+   ```bash
+   git clone https://github.com/Azrul16/schedula.git
+   ```
+
+3. Create a new branch for your feature or bugfix:  
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+4. Make your changes with clear commit messages.  
+   *(Use `git status` to check changes and `git add <file>` to stage files)*
+
+5. Test your changes thoroughly.  
+   *(Run `flutter test` or your preferred testing commands)*
+
+6. Commit your changes:  
+   ```bash
+   git add .
+   git commit -m "Add: description of your changes"
+   ```
+
+7. Push your changes:  
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+8. Submit a pull request with a detailed description.
 
 Please adhere to the existing code style and best practices.
 
@@ -121,13 +133,6 @@ Please adhere to the existing code style and best practices.
 - Email: support@schedulaapp.com  
 - Website: [https://schedulaapp.com](https://schedulaapp.com)  
 - Twitter: [@SchedulaApp](https://twitter.com/SchedulaApp)  
-
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-This README provides an overview and setup instructions for the Schedula Flutter app. For detailed usage and contribution guidelines, please refer to additional documentation or contact the project maintainers.
 
 ## Contributors
 If you would like to contribute to Schedula, follow these steps:
