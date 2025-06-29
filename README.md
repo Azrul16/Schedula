@@ -1,101 +1,133 @@
-# Schedula
+## 🚀 Schedula Flutter App
 
-**Schedula** is a Flutter-based mobile application designed to streamline student life by providing essential tools for managing class schedules, sharing announcements, taking notes, and accessing academic resources through an AI-powered chatbot. Built with a Firebase backend, Schedula offers a seamless user experience with features tailored to students' academic needs.
+[![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev/)
+[![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
+[![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
----
+## 📖 Table of Contents
+- [Project Overview](#-project-overview)
+- [Key Features](#-key-features)
+- [Screenshots & Demo](#-screenshots--demo)
+- [Getting Started](#-getting-started)
+- [Download APK](#-download-apk)
+- [FAQ](#-faq)
+- [Contribution Guidelines](#-contribution-guidelines)
+- [Roadmap](#-roadmap)
+- [Technologies Used](#-technologies-used)
+- [Support & Community](#-support--community)
+- [License](#-license)
+- [Contributors](#-contributors)
+- [Author](#-author)
+
+## 📖 Project Overview
+Schedula is a Flutter-based mobile application designed to manage academic schedules, assignments, announcements, notes, user profiles, and chat functionalities. The app integrates Firebase for backend services and supports user authentication, real-time chat, and AI-powered chat features.
+
+<p align="center">
+  <img src="https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif" alt="App Demo" width="400"/>
+</p>
 
 ## Features
 
-### 🎓 Academic Management
-- **Class Schedule**: Set and manage your class schedules efficiently.
-- **Class Notes**: Add, organize, and view your class notes for easy reference.
-- **Announcements**: Share and view important announcements within your academic circle.
+### ✨ Key Features
+- 📅 **Admin Dashboard:** Manage semesters, classes, assignments, notes, and students.
+- 📢 **Announcements:** Create, view, and manage announcements.
+- 📝 **Assignments:** View and manage assignments with detailed screens.
+- 💬 **Chat:** Real-time chat functionality.
+- 🤖 **Chat AI:** AI-powered chat features with authentication and chat controllers.
+- 🏫 **Class Management:** Manage classes, including creating, updating, and listing classes.
+- 📚 **Notes:** Create and manage notes with detailed views.
+- 👤 **User Accounts:** User registration, login, password recovery, and subscription management.
+- 👥 **Profile Management:** View and edit user profiles, including classmate lists and profile details.
+- 🔐 **Permissions:** Handles app permissions dynamically on startup.
+- 🔥 **Firebase Integration:** Uses Firebase for backend services and authentication.
+- ⚙️ **Environment Configuration:** Supports environment variables via `.env` file.
 
-### 🤖 AI-Powered Chatbot
-- Get instant study help through an AI chatbot designed to assist with academic queries.
-
-### 🧑‍🤝‍🧑 Profile Section
-- View all your batchmates and their profiles.
-- Call batchmates directly through the app.
-
-### 🔒 Account Creation
-To use this app, you need to create an account with the following information:
-- **Academic Gmail**
-- **Full Name**
-- **Student ID**
-- **Registration Number**
-- **Department**
-- **Semester**
-- **University Name**
-
----
-
-## 🔧 Technology Stack
-
-- **Frontend**: Flutter
-- **Backend**: Firebase (Authentication, Firestore, and Storage)
-- **AI Chatbot**: Integration with AI for study assistance
-- **Communication**: In-app call functionality using third-party libraries or Firebase.
-
----
+## 🖼️ Screenshots & Demo
+<p align="center">
+  <img src="https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif" alt="App Demo" width="400"/>
+</p>
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Flutter SDK installed.
-- Firebase account configured with your app.
-- A valid academic Gmail address for account creation.
+- Flutter SDK installed (version compatible with the project)
+- Dart SDK
+- Firebase project setup with configuration files
+- A `.env` file with necessary environment variables
 
-### Setup Instructions
-1. Clone the repository:
+### Installation
+1. Clone the repository or extract the project files.
+2. Navigate to the project directory.
+3. Run `flutter pub get` to install dependencies.
+4. Ensure the Firebase configuration is set up correctly in `lib/firebase_options.dart`.
+5. Create a `.env` file in the root directory with required environment variables.
+6. Run the app on an emulator or physical device using:
    ```bash
-   git clone https://github.com/Azrul16/Schedula.git
+   flutter run
    ```
-2. Navigate to the project directory:
-   ```bash
-   cd schedula
-   ```
-3. Install dependencies:
-   ```bash
-   flutter pub get
-   ```
-4. Ensure Flutter is Properly Configured
-Make sure Flutter is installed and configured on your system. If Flutter is not yet set up, visit the [Flutter official website](https://flutter.dev/docs/get-started/install) for installation instructions.
 
-5. Configure Firebase
-Follow these steps to configure Firebase for the project:
+## 📥 Download APK
 
-   #### Android
-      1. Download the `google-services.json` file from your Firebase console.
-      2. Place the file in the `android/app/` directory of your Flutter project.
+> Download the latest APK of Schedula and install it on your Android device.
 
-   #### iOS
-      1. Download the `GoogleService-Info.plist` file from your Firebase console.
-      2. Place the file in the `ios/Runner/` directory of your Flutter project.
+<p align="center">
+  <a href="https://drive.google.com/file/d/1C4987gEa7M2iuzpTrDrnCc4xmXWz2wkB/view?usp=sharing" target="_blank" style="text-decoration:none;">
+    <img src="https://img.shields.io/badge/Download-APK-blue?style=for-the-badge&logo=android&logoColor=white" alt="Download APK"/>
+  </a>
+</p>
 
-### 3. Final Step
-After adding the configuration file(s), run the following command to ensure your project is set up correctly:
-```bash
-flutter pub get
-```
+## ❓ FAQ
 
-## How to Use
-1. **Login**: Users must have an account to log in. Provide your email and password to access the app.
-2. **Create Account**: New users must provide:
-   - Full Name
-   - Semester
-   - ID
-   - Registration Number
-   - Department
-   - University Name
-   - Email
-   - Password
-3. **Features**:
-   - Navigate to the scheduling section to set up your timetable.
-   - Upload and view notes under the notes section.
-   - Check announcements for updates.
-   - Chat with the AI assistant for help.
-   - Manage and edit your profile, and access classmates' details in the profile section.
+> Frequently Asked Questions about Schedula
+
+- **Is this app free to use?**  
+  Yes, Schedula is free for all students.
+
+- **How do I reset my password?**  
+  Use the "Forgot Password" option on the login screen to reset your password via email.
+
+- **Can I use this app without an academic Gmail?**  
+  No, account creation requires a valid academic Gmail address.
+
+- **How do I contribute to the project?**  
+  See the Contribution Guidelines section below.
+
+## Contribution Guidelines
+We welcome contributions! Please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch for your feature or bugfix.
+3. Make your changes with clear commit messages.
+4. Test your changes thoroughly.
+5. Submit a pull request with a detailed description.
+
+Please adhere to the existing code style and best practices.
+
+## Roadmap
+- Add offline support for schedules and notes.
+- Enhance AI chatbot with more academic subjects.
+- Implement push notifications for announcements.
+- Improve UI with more animations and themes.
+
+## Technologies Used
+- Flutter
+- Dart
+- Firebase (Authentication, Firestore, Storage)
+- AI Chatbot Integration
+- Permission Handler
+
+## Support & Community
+- Email: support@schedulaapp.com  
+- Website: [https://schedulaapp.com](https://schedulaapp.com)  
+- Twitter: [@SchedulaApp](https://twitter.com/SchedulaApp)  
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+This README provides an overview and setup instructions for the Schedula Flutter app. For detailed usage and contribution guidelines, please refer to additional documentation or contact the project maintainers.
 
 ## Contributors
 If you would like to contribute to Schedula, follow these steps:
@@ -122,8 +154,6 @@ If you would like to contribute to Schedula, follow these steps:
 8. **Submit a Pull Request**: Go to the original repository, click on "Pull Requests," and submit your PR. Include a clear description of the changes you’ve made.
 
 ## We appreciate your contributions to improving Schedula!
-
-
 
 ### Author
 - [**Azrul Amaline**](https://github.com/Azrul16)  
