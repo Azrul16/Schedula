@@ -8,29 +8,35 @@ Schedula is a Flutter app for organizing class schedules, course notes, assignme
 
 ## UI showcase
 
-These mockups showcase the main screens using sample content. They are design previews; the running app may differ.
+Explore Schedula through seven individual screen mockups. These previews use sample content; the running app may differ.
 
-![Schedula overview with login, classes, notes, assignments, Gemini chat, profile, and announcements](mockups/schedula_multiple_screens.png)
+### Sign in and get started
 
-### Plan your coursework
+Access your account with email and password, recover your password, or create a new student account.
+
+<p align="center">
+  <img src="mockups/01_login.png" alt="Schedula login screen with email, password, password recovery, and account creation" width="280">
+</p>
+
+### Organize your academic day
+
+View your class timeline, find semester notes, and keep assignment deadlines and completion status in sight.
 
 | Classes | Notes | Assignments |
 | :---: | :---: | :---: |
-| <img src="mockups/02_classes.png" alt="Daily class timeline and upcoming courses" width="250"> | <img src="mockups/03_notes.png" alt="Semester notes with course materials and download controls" width="250"> | <img src="mockups/04_assignments.png" alt="Assignments with due dates and completion status" width="250"> |
-| Follow your class schedule. | Keep course materials together. | Track deadlines and progress. |
+| <img src="mockups/02_classes.png" alt="Classes screen showing a daily timeline and upcoming courses" width="250"> | <img src="mockups/03_notes.png" alt="Notes screen showing semester course materials and download controls" width="250"> | <img src="mockups/04_assignments.png" alt="Assignments screen showing due dates and completion status" width="250"> |
+| Follow your upcoming classes. | Find and download study materials. | Track coursework and deadlines. |
 
-### Stay connected
+### Chat, personalize, and stay informed
+
+Ask the Gemini assistant questions, manage your student profile, and read academic announcements.
 
 | Gemini chat | Profile | Announcements |
 | :---: | :---: | :---: |
-| <img src="mockups/05_chat.png" alt="Gemini chat with message history and input field" width="250"> | <img src="mockups/06_profile.png" alt="Student profile with edit profile and logout controls" width="250"> | <img src="mockups/07_announcements.png" alt="Academic updates and announcement cards" width="250"> |
-| Ask the AI assistant questions. | Manage your student profile. | Read academic updates. |
+| <img src="mockups/05_chat.png" alt="Gemini chat screen with conversation history and a message input" width="250"> | <img src="mockups/06_profile.png" alt="Student profile screen with edit profile and logout controls" width="250"> | <img src="mockups/07_announcements.png" alt="Announcements screen showing academic updates and notices" width="250"> |
+| Chat with the AI assistant. | Manage your student profile. | Catch up on academic updates. |
 
-### Account access
-
-<img src="mockups/01_login.png" alt="Schedula login with email, password, password recovery, and account creation" width="250">
-
-Browse the original images in [mockups/](mockups/).
+View the full-size images in [mockups/](mockups/).
 
 ## Features
 
