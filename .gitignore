@@ -1,0 +1,13 @@
+# Local credentials and generated Firebase configuration
+.env
+.env.*
+!.env.example
+**/google-services.json
+**/GoogleService-Info.plist
+schedula/lib/firebase_options.dart
+schedula/firebase.json
+*.jks
+*.keystore
+**/key.properties
+**/service-account*.json
+**/.cxx/

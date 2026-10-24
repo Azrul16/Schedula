@@ -38,8 +38,7 @@ class _ChatScreenState extends State<ChatScreen> {
     // Correctly load the API key from the .env file
     // Assuming your .env file has a key named 'GEMINI_API_KEY'
     // The hardcoded API key has been removed here to ensure it's loaded from .env
-    final String geminiAPI = dotenv.env['GEMINI_API_KEY'] ??
-        'REMOVED_API_KEY';
+    final String geminiAPI = dotenv.env['GEMINI_API_KEY']?.trim() ?? '';
 
     if (geminiAPI.isEmpty) {
       return 'Error: API key is missing..';
